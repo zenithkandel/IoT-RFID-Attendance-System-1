@@ -96,6 +96,48 @@ async function initCalendar(studentRoll) {
         }
         renderCalendar(currentMonth, currentYear);
     });
+
+    // Check Specific Date Logic
+    const checkDateBtn = document.getElementById('checkDateBtn');
+    const checkDateInput = document.getElementById('checkDateInput');
+    const dateResult = document.getElementById('dateResult');
+
+    if (checkDateBtn && checkDateInput) {
+        checkDateBtn.addEventListener('click', () => {
+            const selectedDate = checkDateInput.value;
+            
+            if (!selectedDate) {
+                dateResult.innerHTML = '<p class="placeholder-text">Please select a date first</p>';
+                dateResult.className = 'date-result';
+                return;
+            }
+
+            const formattedDate = new Date(selectedDate).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            if (attendanceData.has(selectedDate)) {
+                dateResult.innerHTML = `<i class="fas fa-check-circle"></i> <strong>Present</strong> on ${formattedDate}`;
+                dateResult.className = 'date-result present';
+            } else {
+                // Check if date is in future
+                const checkDate = new Date(selectedDate);
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                
+                if (checkDate > today) {
+                    dateResult.innerHTML = `<i class="fas fa-clock"></i> No record yet (Future Date)`;
+                    dateResult.className = 'date-result';
+                } else {
+                    dateResult.innerHTML = `<i class="fas fa-times-circle"></i> <strong>Absent</strong> on ${formattedDate}`;
+                    dateResult.className = 'date-result absent';
+                }
+            }
+        });
+    }
 }
 
 async function fetchAttendanceData(studentRoll) {
