@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         currentDateElement.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
 
+    // Initialize Calendar
+    initCalendar(studentRoll);
+
     // Custom Cursor Logic
     const cursorDot = document.querySelector('.cursor-dot');
     const cursorOutline = document.querySelector('.cursor-outline');
