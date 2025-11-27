@@ -10,6 +10,10 @@
     --white: #ffffff;
     --success: #34d399;
     --danger: #f87171;
+    --bg-surface: rgba(255, 255, 255, 0.02);
+    --bg-input: rgba(255, 255, 255, 0.05);
+    --border-input: rgba(255, 255, 255, 0.1);
+    --text-input: #ffffff;
 }
 
 [data-theme="light"] {
@@ -24,6 +28,10 @@
     --white: #0f172a; /* Dark text for light mode */
     --success: #059669;
     --danger: #dc2626;
+    --bg-surface: rgba(0, 0, 0, 0.03);
+    --bg-input: rgba(0, 0, 0, 0.05);
+    --border-input: rgba(0, 0, 0, 0.1);
+    --text-input: #1e293b;
 }
 
 * {

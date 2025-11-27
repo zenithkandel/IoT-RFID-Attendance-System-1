@@ -65,7 +65,7 @@ body {
     gap: 12px;
     width: 100%;
     margin-top: 10px;
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-surface);
     padding: 15px;
     border-radius: 12px;
 }
@@ -76,7 +76,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 8px;
 }
 
@@ -167,7 +167,7 @@ body {
     aspect-ratio: auto; /* Remove fixed aspect ratio */
     height: 100%;
     min-height: 40px; /* Minimum height */
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-surface);
     border-radius: 6px;
     font-size: 0.9rem;
     display: flex;
@@ -176,6 +176,7 @@ body {
     cursor: default;
     border: 1px solid transparent; /* Ensure border is present for status colors */
     position: relative;
+    color: var(--text-dark);
 }
 
 .calendar-day.present {
@@ -255,9 +256,9 @@ body {
     padding: 10px 15px;
     font-size: 0.9rem;
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--white);
+    background: var(--bg-input);
+    border: 1px solid var(--border-input);
+    color: var(--text-input);
     border-radius: 8px;
     outline: none;
     transition: all 0.3s ease;
@@ -267,7 +268,7 @@ body {
 .date-input:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--bg-surface);
 }
 
 .btn-check {
