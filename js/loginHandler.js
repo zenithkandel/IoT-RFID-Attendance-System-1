@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Clear any existing session to prevent glitches
+    sessionStorage.clear();
+
     const loginForm = document.getElementById('loginForm');
 
     if (loginForm) {
