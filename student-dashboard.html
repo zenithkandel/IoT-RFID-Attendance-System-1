@@ -7,15 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        body { padding-top: 80px; }
-        .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .student-profile { background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
-        .avatar { width: 80px; height: 80px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; }
-        .info h2 { margin-bottom: 5px; }
-        .info p { color: var(--text-light); }
-        .attendance-card { background: rgba(52, 211, 153, 0.1); border: 1px solid var(--success); padding: 20px; border-radius: 12px; color: var(--success); text-align: center; }
-    </style>
+    <link rel="stylesheet" href="css/student-dashboard.css">
 </head>
 <body>
     <nav class="navbar">
@@ -54,19 +46,6 @@
         </div>
     </div>
 
-    <script>
-        // Check session
-        if (sessionStorage.getItem('isLoggedIn') !== 'true' || sessionStorage.getItem('userRole') !== 'student') {
-            window.location.href = 'login.html';
-        }
-
-        document.getElementById('studentRoll').textContent = sessionStorage.getItem('studentId');
-        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-        function logout() {
-            sessionStorage.clear();
-            window.location.href = 'login.html';
-        }
-    </script>
+    <script src="js/student-dashboard.js"></script>
 </body>
 </html>
