@@ -1,0 +1,195 @@
+<!--
+  EduTrack Pro Web Portal
+  Author: Sakshyam Bastakoti
+  Description: Frontend interface for attendance system.
+-->
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bhu.Pu. Sainik - Student Attendance System</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://www.gstatic.com/charts/loader.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="login-page">
+<div class="login-background"></div>
+<div class="login-container">
+<div class="login-left">
+<div class="login-graphic"><i class="fas fa-school"></i></div>
+<h2>Bhu Pu Sainik School</h2>
+<p>Advanced student attendance tracking system.</p>
+</div>
+<div class="login-right">
+<h1>Admin Login</h1>
+<div class="input-group"><label for="username">Username</label><input id="username" placeholder="Enter username" type="text"/></div>
+<div class="input-group"><label for="password">Password</label><div class="password-container"><input id="password" placeholder="Enter password" type="password"/><span class="toggle-password" id="togglePassword"><i class="fas fa-eye"></i></span></div></div>
+<button class="login-btn" onclick="login()">Sign in</button>
+<div class="error-message" id="errorMessage">Invalid username or password.</div>
+</div>
+</div>
+</div>
+<div id="dashboard">
+<header class="dashboard-header">
+<div class="logo">
+<button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+<a href="https://www.facebook.com/raj.bhattarai.75873" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+<div class="logo-icon" style="width: 50px; height: 50px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+<img alt="Your Logo" src="school.webp" style="width: 100%; height: 100%; object-fit: contain;"/>
+</div>
+<span style="margin-left: 10px;">Admin - Bhu Pu Sainik School</span>
+</a>
+</div>
+<div class="user-info">
+<div class="user-avatar"><i class="fas fa-user-shield"></i></div>
+<span>Admin User</span>
+<a href="#" onclick="logout()" style="color: white; margin-left: 15px;"><i class="fas fa-sign-out-alt"></i></a>
+</div>
+</header>
+<div class="dashboard-content">
+<aside class="sidebar">
+<a class="nav-item active" href="#" onclick="showSection('dashboard-section')"><i class="fas fa-th-large"></i><span>Dashboard</span></a>
+<a class="nav-item" href="#" onclick="showSection('attendance-section')"><i class="fas fa-calendar-check"></i><span>Attendance</span></a>
+<a class="nav-item" href="#" onclick="showSection('students-section')"><i class="fas fa-user-graduate"></i><span>Students</span></a>
+<a class="nav-item" href="#" onclick="showSection('reports-section')"><i class="fas fa-chart-line"></i><span>Reports</span></a>
+<a class="nav-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+</aside>
+<main class="main-content">
+<div class="content-section active" id="dashboard-section">
+<div class="page-title"><h1>Dashboard</h1><span id="current-date"></span></div>
+<div class="stats-cards">
+<div class="stat-card"><div class="stat-card-header"><div class="stat-card-title">Total Students</div><div class="stat-card-icon bg-primary-light"><i class="fas fa-user-graduate"></i></div></div><div class="stat-card-value" id="totalStudents">0</div><div class="stat-card-desc">Across all classes</div></div>
+<div class="stat-card"><div class="stat-card-header"><div class="stat-card-title">Present Today</div><div class="stat-card-icon bg-success-light"><i class="fas fa-check-circle"></i></div></div><div class="stat-card-value" id="presentCount">0</div><div class="stat-card-desc" id="presentTimeDesc"></div></div>
+<div class="stat-card"><div class="stat-card-header"><div class="stat-card-title">Absent Today</div><div class="stat-card-icon bg-danger-light"><i class="fas fa-user-times"></i></div></div><div class="stat-card-value" id="absentCount">0</div><div class="stat-card-desc" id="absentTimeDesc"></div></div>
+<div class="stat-card"><div class="stat-card-header"><div class="stat-card-title">Attendance %</div><div class="stat-card-icon bg-warning-light"><i class="fas fa-percentage"></i></div></div><div class="stat-card-value" id="attendancePercent">0%</div><div class="stat-card-desc">Today's average</div></div>
+</div>
+<div class="attendance-section">
+<div class="section-header"><h2 class="section-title">Today's Attendance</h2><button class="export-btn" onclick="refreshData()"><i class="fas fa-sync-alt"></i>Refresh</button></div>
+<div class="loading" id="loadingToday"><div class="spinner"></div><p>Loading...</p></div>
+<div class="dashboard-grid">
+<div class="attendance-card">
+<h3 class="section-title" style="margin-bottom: 15px; font-size: 1.1rem; color: var(--primary);">Present Students</h3>
+<div class="attendance-table-container">
+<table class="attendance-table" id="presentStudentsTable">
+<thead><tr><th>Student</th><th>Roll No</th><th>Class</th><th>Check-In</th><th>Address</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+<div class="attendance-card">
+<h3 class="section-title" style="margin-bottom: 15px; font-size: 1.1rem; color: var(--danger);">Absent Students</h3>
+<div class="attendance-table-container">
+<table class="attendance-table" id="absentStudentsTable">
+<thead><tr><th>Student</th><th>Roll No</th><th>Class</th><th>Address</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="content-section" id="attendance-section">
+<div class="page-title"><h1>Attendance Management</h1></div>
+<div class="attendance-section">
+<div class="section-header"><h2 class="section-title">All Records</h2><div style="display: flex; gap: 10px;"><input id="filterDate" style="padding: 10px; border-radius: 8px; border: 1px solid var(--border);" type="date"/><button class="export-btn" onclick="filterByDate()"><i class="fas fa-filter"></i> Filter</button><button class="export-btn" onclick="downloadFilteredAttendance()"><i class="fas fa-download"></i> Download Sheet</button></div></div>
+<div class="loading" id="loadingRecords"><div class="spinner"></div><p>Loading...</p></div>
+<div class="attendance-table-container" style="max-height: 65vh;">
+<table class="attendance-table" id="recordsTable">
+<thead>
+<tr>
+<th>Date</th>
+<th>Time</th>
+<th>UID</th>
+<th>Name</th>
+<th>Roll No</th>
+<th>Class</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="content-section" id="students-section">
+<div class="page-title"><h1>Student Management</h1></div>
+<div class="attendance-section">
+<div class="section-header">
+<h2 class="section-title">All Students</h2>
+<div style="display: flex; gap: 10px; align-items: center;">
+<input id="studentSearch" onkeyup="searchStudents()" placeholder="Search students..." style="padding: 10px; border-radius: 8px; border: 1px solid var(--border);" type="text"/>
+<button class="export-btn" onclick="window.open('https://docs.google.com/spreadsheets/d/1Nq8gmY1huGd6Ioa_UomoAJjRdIrMwmu7JG43mc8Pkgk/', '_blank')">
+<i class="fas fa-database"></i> View Database
+                                </button>
+</div>
+</div>
+<div class="loading" id="loadingStudents"><div class="spinner"></div><p>Loading...</p></div>
+<div class="student-cards" id="studentCards"></div>
+</div>
+</div>
+<div class="content-section" id="reports-section">
+<div class="page-title"><h1>Reports &amp; Analytics</h1></div>
+<div class="attendance-section">
+<div class="section-header">
+<h2 class="section-title">Last 7 Days Attendance</h2>
+<button class="export-btn" onclick="downloadAllAttendance()"><i class="fas fa-download"></i> Download Full Report</button>
+</div>
+<div id="attendanceChart" style="width: 100%; max-width: 900px; height: 400px; margin: 20px auto;"></div>
+</div>
+</div>
+</main>
+</div>
+</div>
+<!-- Enhanced Footer -->
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-section">
+<h3>About EduTrack Pro</h3>
+<p>EduTrack Pro is an advanced student attendance tracking system build by Sakshyam Bastakoti for educational institutions to manage student attendance.</p>
+<div class="footer-social">
+<a class="social-icon" href="https://www.facebook.com/sakshyam.xeetri"><i class="fab fa-facebook-f"></i></a>
+<a class="social-icon" href="https://sakshyambastakoti.com.np/"><i class="fas fa-globe"></i></a>
+<a class="social-icon" href="https://www.instagram.com/sakxam_console.log/"><i class="fab fa-instagram"></i></a>
+<a class="social-icon" href="https://www.linkedin.com/in/sakshyambastakoti/"><i class="fab fa-linkedin-in"></i></a>
+</div>
+</div>
+<div class="footer-section">
+<h3>Quick Links</h3>
+<ul class="footer-links">
+<li><a href="#" onclick="showFooterInfo('home')"><i class="fas fa-arrow-right"></i> Home</a></li>
+<li><a href="#" onclick="showFooterInfo('features')"><i class="fas fa-arrow-right"></i> Features</a></li>
+<li><a href="#" onclick="showFooterInfo('contact')"><i class="fas fa-arrow-right"></i> Contact</a></li>
+<li><a href="#" onclick="showFooterInfo('privacy')"><i class="fas fa-arrow-right"></i> Privacy Policy</a></li>
+</ul>
+</div>
+<div class="footer-section">
+<h3>Contact Info</h3>
+<ul class="footer-links">
+<li><a href="#"><i class="fas fa-map-marker-alt"></i> Putalisadak, Kathmandu, Nepal</a></li>
+<li><a href="#"><i class="fas fa-phone"></i> +977 9764320750</a></li>
+<li><a href="#"><i class="fas fa-envelope"></i> sakshyamxeetri@gmail.com</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<p>© 2025 EduTrack Pro. All rights reserved. | Designed by Sakshyam Bastakoti</p>
+</div>
+<!-- Information Modal -->
+<div class="footer-modal" id="footer-modal">
+<div class="footer-modal-content">
+<span class="footer-modal-close" onclick="closeFooterModal()">×</span>
+<div id="footer-modal-body"></div>
+</div>
+</div>
+</footer>
+
+
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toast-message"></span></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+================================================================================
+                           EDU TRACK PRO
+              IoT-Based RFID Smart Attendance System
+================================================================================
+
+Project By: Robotics Club of Kathmandu Model Secondary School (KMSS)
+            Bagbazar, Kathmandu, Nepal
+
+Event:      Tech Expo Demonstration - KMSS Lalitpur
+Date:       November 2025
+
+Original Authors: 
+  - Sakshyam Bastakoti (https://github.com/sakshyambastakoti)
+  - Robotics Club Team Members
+
+================================================================================
+                        PROJECT OVERVIEW
+================================================================================
+
+EDU TRACK PRO is a production-ready IoT-based smart attendance management 
+system that uses RFID (Radio Frequency Identification) technology to automate
+the process of tracking student attendance. The system eliminates manual
+attendance marking, reduces errors, and provides real-time data analytics.
+
+
+
+================================================================================
+                        USER ROLES & FEATURES
+================================================================================
+
+ADMINISTRATOR (Admin Panel)
+───────────────────────────
+  ✓ View all students' attendance records
+  ✓ Analytics dashboard with charts:
+    - Daily/Weekly/Monthly attendance trends
+    - Class-wise attendance comparison
+    - Individual student attendance percentage
+    - Present vs Absent ratio (pie charts)
+    - Attendance heatmaps
+  ✓ Filter by date range, class, student
+  ✓ Export reports (future enhancement)
+  ✓ View real-time attendance feed
+
+STUDENT (Student Portal)
+────────────────────────
+  ✓ View personal attendance only
+  ✓ Calendar-based UI showing:
+    - Green: Present days
+    - Red: Absent days
+    - Gray: Holidays/Non-school days
+  ✓ Attendance percentage display
+  ✓ Monthly attendance summary
+  ✓ Login using Roll Number + UID
+
+
+
+================================================================================
+                        KEY FEATURES
+================================================================================
+
+  ✦ Real-time Attendance Tracking
+  ✦ Cloud-based Data Storage (Google Sheets)
+  ✦ No Internet Required for Scanning (queues offline, syncs later)
+  ✦ Beautiful, Responsive Web Dashboard
+  ✦ Role-based Access (Admin/Student)
+  ✦ Interactive Analytics & Charts
+  ✦ Calendar-based Attendance View
+  ✦ Minimalistic & Modern UI Design
+  ✦ Mobile-friendly Interface
+  ✦ Wi-Fi Configuration via Hotspot
+  ✦ Audio-Visual Feedback (Buzzer + LED + LCD)
+
+================================================================================
+                        PURPOSE & USE CASES
+================================================================================
+
+1. EDUCATIONAL INSTITUTIONS
+   - Schools, Colleges, Universities
+   - Coaching Centers, Training Institutes
+
+2. BENEFITS
+   - Eliminates manual attendance marking
+   - Reduces proxy attendance
+   - Real-time tracking for parents/admin
+   - Historical data for analysis
+   - Time-saving for teachers
+
+3. TECH EXPO DEMONSTRATION
+   - Showcases IoT capabilities
+   - Demonstrates cloud integration
+   - Interactive hardware-software system
+   - Real-world problem solving
+
+================================================================================
+                        FUTURE ENHANCEMENTS
+================================================================================
+
+  □ SMS/Email notifications to parents
+  □ Mobile app (React Native/Flutter)
+  □ Biometric integration (fingerprint)
+  □ Face recognition option
+  □ Multiple RFID reader support
+  □ Offline mode with sync
+  □ PDF report generation
+  □ Multi-school support
+  □ API for third-party integrations
+
+================================================================================
+                        CONTACT & CREDITS
+================================================================================
+
+Robotics Club - KMSS Bagbazar
+Kathmandu Model Secondary School
+Bagbazar, Kathmandu, Nepal
+
+Original Developer: Sakshyam Bastakoti
+GitHub: https://github.com/sakshyambastakoti
+
+================================================================================
+                           © 2025 EDU TRACK PRO
+              Robotics Club, KMSS Bagbazar - All Rights Reserved
+================================================================================

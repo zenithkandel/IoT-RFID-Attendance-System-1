@@ -1,0 +1,110 @@
+/********************************************************************************************
+ * EduTrack Pro - Google Sheets Attendance Web App
+ * Created by: Sakshyam Bastakoti
+ * GitHub: https://github.com/sakshyambastakoti
+ * Date: 2025-09-26
+ * 
+ * Description:
+ *   This Google Apps Script receives RFID attendance data from ESP8266/NodeMCU.
+ *   It automatically creates and manages two sheets:
+ *     1. Database (Stores UID, Name, Roll No, Class, Address)
+ *     2. Attendance (Logs attendance with Date, Time, UID, and student details)
+ * 
+ * Features:
+ *   - Auto-creates sheets if they don’t exist
+ *   - Looks up student details from Database sheet
+ *   - Logs attendance into Attendance sheet
+ *   - Returns response back to Arduino (Success/Error)
+ ********************************************************************************************/
+
+// ---------------- CONFIGURATION ----------------
+var SS = SpreadsheetApp.openById("1S7L_hKo5LJW6bOPKvxLMkXVSiP4V1CH5rfX6xYqAhBE"); // Spreadsheet ID
+var timezone = "Asia/Kathmandu"; // Timezone for formatting
+var hours = 0; // Extra offset hours (not needed, timezone handles this)
+var str = "";  // Response message string
+
+
+// ---------------- POST HANDLER ----------------
+function doPost(e) {
+  var parsedData;
+  var result = {};
+
+  try {
+    // Parse incoming JSON data from Arduino
+    parsedData = JSON.parse(e.postData.contents);
+  } catch (err) {
+    return ContentService.createTextOutput("Error in parsing request body: " + err.message);
+  }
+
+  if (parsedData !== undefined) {
+    var flag = parsedData.format;
+    if (flag === undefined) flag = 0;
+
+    // Ensure Database sheet exists
+    var databaseSheet = SS.getSheetByName("Database");
+    if (!databaseSheet) {
+      databaseSheet = SS.insertSheet("Database");
+      databaseSheet.getRange("A1:E1").setValues([
+        ["UID", "Name", "Roll No", "Class", "Address"]
+      ]);
+    }
+
+    // Ensure Attendance sheet exists
+    var attendanceSheet = SS.getSheetByName("Attendance");
+    if (!attendanceSheet) {
+      attendanceSheet = SS.insertSheet("Attendance");
+      attendanceSheet.getRange("A1:G1").setValues([
+        ["Date", "Time", "UID", "Name", "Roll No", "Class", "Address"]
+      ]);
+    }
+
+    // Extract UID from Arduino payload
+    var dataArr = parsedData.values.split(","); // Expecting only UID in values
+    var uid = dataArr[0].trim();
+
+    // Current Date and Time
+    var Curr_Date_Obj = new Date(new Date().setHours(new Date().getHours() + hours));
+    var Curr_Date = Utilities.formatDate(Curr_Date_Obj, timezone, "yyyy-MM-dd");
+    var Curr_Time = Utilities.formatDate(Curr_Date_Obj, timezone, "HH:mm:ss");
+
+    // Handle command sent by Arduino
+    switch (parsedData.command) {
+      case "insert_row":
+        // Default student details
+        var name = "Unknown";
+        var rollNo = "Unknown";
+        var studentClass = "Unknown";
+        var address = "Unknown";
+
+        // Lookup student info from Database
+        var databaseData = databaseSheet.getDataRange().getValues();
+        for (var i = 1; i < databaseData.length; i++) { // Skip header row
+          if (databaseData[i][0] === uid) {
+            name = databaseData[i][1];
+            rollNo = databaseData[i][2];
+            studentClass = databaseData[i][3];
+            address = databaseData[i][4];
+            break;
+          }
+        }
+
+        // Insert new attendance record at row 2 (below header)
+        attendanceSheet.insertRows(2);
+        attendanceSheet.getRange("A2").setValue(Curr_Date);    // Date
+        attendanceSheet.getRange("B2").setValue(Curr_Time);    // Time
+        attendanceSheet.getRange("C2").setValue(uid);          // UID
+        attendanceSheet.getRange("D2").setValue(name);         // Name
+        attendanceSheet.getRange("E2").setValue(rollNo);       // Roll No
+        attendanceSheet.getRange("F2").setValue(studentClass); // Class
+        attendanceSheet.getRange("G2").setValue(address);      // Address
+
+        str = "Success"; // Return success to Arduino
+        SpreadsheetApp.flush();
+        break;
+    }
+
+    return ContentService.createTextOutput(str);
+  } else {
+    return ContentService.createTextOutput("Error! Request body empty or incorrect format.");
+  }
+}
