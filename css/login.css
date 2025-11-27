@@ -130,6 +130,7 @@ body {
     padding: 0;
     font-size: 1rem;
     transition: color 0.3s;
+    z-index: 2;
 }
 
 .toggle-password:hover {
