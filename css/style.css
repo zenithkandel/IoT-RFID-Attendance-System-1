@@ -759,29 +759,86 @@ footer .container {
 .rfid-reader-box {
     width: 200px;
     height: 120px;
+    position: relative;
+    transform-style: preserve-3d;
+    transform: rotateX(50deg) rotateZ(-20deg);
+    z-index: 1;
+}
+
+.reader-face {
+    position: absolute;
     background: #1a1a1a;
     border: 1px solid #333;
-    border-radius: 10px;
-    position: relative;
-    transform: rotateX(40deg);
-    box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+}
+
+.reader-top {
+    width: 200px;
+    height: 120px;
+    transform: translateZ(20px);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 1;
+    background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.reader-bottom {
+    width: 200px;
+    height: 120px;
+    transform: translateZ(-20px);
+    background: #000;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+.reader-front {
+    width: 200px;
+    height: 40px;
+    transform: rotateX(-90deg) translateZ(60px);
+    background: #111;
+}
+
+.reader-back {
+    width: 200px;
+    height: 40px;
+    transform: rotateX(90deg) translateZ(60px);
+    background: #111;
+}
+
+.reader-left {
+    width: 40px;
+    height: 120px;
+    transform: rotateY(-90deg) translateZ(100px);
+    background: #151515;
+}
+
+.reader-right {
+    width: 40px;
+    height: 120px;
+    transform: rotateY(90deg) translateZ(100px);
+    background: #151515;
 }
 
 .reader-screen {
     width: 80%;
-    height: 70%;
+    height: 60%;
     background: #000;
     border: 1px solid #333;
-    border-radius: 5px;
+    border-radius: 4px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+}
+
+.brand-text {
+    color: #444;
+    font-size: 0.7rem;
+    margin-top: 8px;
+    font-weight: 700;
+    letter-spacing: 2px;
 }
 
 .reader-signal {
@@ -814,14 +871,14 @@ footer .container {
     border-radius: 8px;
     position: absolute;
     top: 0;
-    transform: rotateX(20deg) translateY(-50px);
+    transform: rotateX(50deg) rotateZ(-20deg) translateZ(150px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     z-index: 2;
-    opacity: 0; /* Hidden initially */
+    opacity: 0;
 }
 
 .sim-chip {
@@ -884,12 +941,12 @@ footer .container {
 }
 
 @keyframes card-tap {
-    0% { opacity: 0; transform: rotateX(20deg) translateY(-80px) translateZ(0); }
-    20% { opacity: 1; transform: rotateX(20deg) translateY(-80px) translateZ(0); }
-    40% { transform: rotateX(10deg) translateY(40px) translateZ(20px); } /* Touch */
-    45% { transform: rotateX(10deg) translateY(40px) translateZ(20px); } /* Hold */
-    60% { opacity: 1; transform: rotateX(20deg) translateY(-80px) translateZ(0); }
-    100% { opacity: 0; transform: rotateX(20deg) translateY(-80px) translateZ(0); }
+    0% { opacity: 0; transform: rotateX(50deg) rotateZ(-20deg) translateZ(150px); }
+    20% { opacity: 1; transform: rotateX(50deg) rotateZ(-20deg) translateZ(150px); }
+    40% { transform: rotateX(50deg) rotateZ(-20deg) translateZ(30px); } /* Touch */
+    45% { transform: rotateX(50deg) rotateZ(-20deg) translateZ(30px); } /* Hold */
+    60% { opacity: 1; transform: rotateX(50deg) rotateZ(-20deg) translateZ(150px); }
+    100% { opacity: 0; transform: rotateX(50deg) rotateZ(-20deg) translateZ(150px); }
 }
 
 @keyframes tick-pop {
