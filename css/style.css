@@ -18,6 +18,9 @@
     --border-success-subtle: rgba(52, 211, 153, 0.2);
     --bg-present: rgba(52, 211, 153, 0.2);
     --bg-absent: rgba(248, 113, 113, 0.2);
+    --bg-navbar: rgba(5, 5, 5, 0.7);
+    --border-navbar: rgba(255, 255, 255, 0.05);
+    --cursor-border: rgba(255, 255, 255, 0.5);
 }
 
 [data-theme="light"] {
@@ -40,6 +43,9 @@
     --border-success-subtle: rgba(5, 150, 105, 0.2);
     --bg-present: rgba(5, 150, 105, 0.1);
     --bg-absent: rgba(220, 38, 38, 0.1);
+    --bg-navbar: rgba(255, 255, 255, 0.8);
+    --border-navbar: rgba(0, 0, 0, 0.05);
+    --cursor-border: rgba(0, 0, 0, 0.5);
 }
 
 * {
