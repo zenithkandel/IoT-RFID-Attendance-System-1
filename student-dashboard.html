@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Edu Track Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { padding-top: 80px; }
+        .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .student-profile { background: var(--bg-card); padding: 30px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
+        .avatar { width: 80px; height: 80px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; }
+        .info h2 { margin-bottom: 5px; }
+        .info p { color: var(--text-light); }
+        .attendance-card { background: rgba(52, 211, 153, 0.1); border: 1px solid var(--success); padding: 20px; border-radius: 12px; color: var(--success); text-align: center; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-fingerprint"></i> Edu Track Pro <span class="badge">Student</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="logout()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="student-profile">
+            <div class="avatar">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="info">
+                <h2 id="studentName">Welcome, Student</h2>
+                <p>Roll No: <span id="studentRoll">Loading...</span></p>
+            </div>
+        </div>
+
+        <div class="attendance-card">
+            <h3><i class="fas fa-check-circle"></i> You are marked PRESENT today</h3>
+            <p id="currentDate"></p>
+        </div>
+
+        <!-- Placeholder for student content -->
+        <div style="margin-top: 40px;">
+            <h3>Recent Attendance History</h3>
+            <div style="background: var(--bg-card); height: 200px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-light); margin-top: 15px;">
+                No recent records available
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check session
+        if (sessionStorage.getItem('isLoggedIn') !== 'true' || sessionStorage.getItem('userRole') !== 'student') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('studentRoll').textContent = sessionStorage.getItem('studentId');
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
