@@ -140,7 +140,7 @@ body {
 
 .calendar-header h3 {
     font-size: 1.2rem;
-    color: var(--text-primary);
+    color: var(--text-dark);
 }
 
 .month-nav button {
