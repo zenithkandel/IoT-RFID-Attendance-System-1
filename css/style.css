@@ -901,9 +901,11 @@ footer .container {
 }
 
 @keyframes signal-flash {
-    0%, 35% { color: #333; }
-    40%, 80% { color: var(--success); text-shadow: 0 0 10px var(--success); }
-    100% { color: #333; }
+    0%, 35% { opacity: 1; color: #333; }
+    38% { opacity: 0; }
+    40%, 90% { opacity: 0; }
+    95% { opacity: 1; color: #333; }
+    100% { opacity: 1; color: #333; }
 }
 
 @keyframes particle-float {
