@@ -317,9 +317,21 @@ async function fetchStudentDetails(studentRoll) {
                 studentFound = true;
                 
                 const uid = row.c[0] ? (row.c[0].v || 'N/A') : 'N/A';
-                const name = row.c[1] ? (row.c[1].v || 'Student') : 'Student';
-                const className = row.c[3] ? (row.c[3].v || 'N/A') : 'N/A';
-                const address = row.c[4] ? (row.c[4].v || 'N/A') : 'N/A';
+                let name = row.c[1] ? (row.c[1].v || 'Student') : 'Student';
+                let className = row.c[3] ? (row.c[3].v || 'N/A') : 'N/A';
+                let address = row.c[4] ? (row.c[4].v || 'N/A') : 'N/A';
+                
+                // Helper to fix capitalization (Title Case)
+                const toTitleCase = (str) => {
+                    if (typeof str !== 'string') return String(str);
+                    return str.toLowerCase().split(' ').map(word => 
+                        word.charAt(0).toUpperCase() + word.slice(1)
+                    ).join(' ');
+                };
+
+                name = toTitleCase(name);
+                className = toTitleCase(className);
+                address = toTitleCase(address);
                 
                 // Update DOM
                 document.getElementById('studentName').textContent = `Welcome, ${name}`;
