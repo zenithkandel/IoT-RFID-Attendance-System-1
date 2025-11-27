@@ -169,15 +169,18 @@ async function fetchAttendanceData(studentRoll) {
         // Update "You are marked PRESENT today" status
         const todayStr = new Date().toISOString().split('T')[0];
         const statusHeader = document.querySelector('.attendance-card h3');
+        const statusText = document.getElementById('todayStatusText');
         const statusCard = document.querySelector('.attendance-card');
         
         if (attendanceData.has(todayStr)) {
-            statusHeader.innerHTML = '<i class="fas fa-check-circle"></i> You are marked PRESENT today';
+            statusHeader.innerHTML = '<i class="fas fa-check-circle"></i> Today\'s Status';
+            statusText.textContent = 'Marked PRESENT';
             statusCard.style.borderColor = 'var(--success)';
             statusCard.style.color = 'var(--success)';
             statusCard.style.background = 'rgba(52, 211, 153, 0.1)';
         } else {
-            statusHeader.innerHTML = '<i class="fas fa-times-circle"></i> You are NOT marked present yet';
+            statusHeader.innerHTML = '<i class="fas fa-times-circle"></i> Today\'s Status';
+            statusText.textContent = 'Not Marked Yet';
             statusCard.style.borderColor = 'var(--danger)';
             statusCard.style.color = 'var(--danger)';
             statusCard.style.background = 'rgba(239, 68, 68, 0.1)';
