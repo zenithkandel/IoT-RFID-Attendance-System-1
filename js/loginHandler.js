@@ -128,8 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.opacity = '1';
                 btn.disabled = false;
 
-                // Show error (you might want to add an error element to HTML)
-                alert(error.message || 'Login failed. Please check your credentials.');
+                // Show error
+                errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error.message || 'Login failed. Please check your credentials.'}`;
+                errorDiv.classList.add('visible');
             }
         });
     }
