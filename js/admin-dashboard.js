@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('clicking');
         });
     }
-
-    function logout() {
-        sessionStorage.clear();
-        window.location.href = 'login.html';
-    }
 });
+
+function logout() {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+}
