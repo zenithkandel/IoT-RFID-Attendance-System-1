@@ -172,3 +172,30 @@ body {
 
 .dot.present { background: var(--success); }
 .dot.absent { background: var(--danger); }
+
+/* Student Details Grid */
+.student-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 30px;
+    margin-top: 10px;
+}
+
+.student-details-grid p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.student-details-grid p i {
+    color: var(--primary-color);
+    width: 20px;
+    text-align: center;
+}
+
+.student-details-grid strong {
+    color: var(--text-primary);
+    margin-right: 5px;
+}

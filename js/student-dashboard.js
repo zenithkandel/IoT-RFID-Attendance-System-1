@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize Calendar
     initCalendar(studentRoll);
+    
+    // Fetch Student Details
+    fetchStudentDetails(studentRoll);
 
     // Custom Cursor Logic
     const cursorDot = document.querySelector('.cursor-dot');
