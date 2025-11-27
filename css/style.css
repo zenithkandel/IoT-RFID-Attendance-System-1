@@ -540,34 +540,66 @@ body.clicking .cursor-dot {
 }
 
 .feature-card {
-    background: var(--bg-card);
+    background: rgba(17, 17, 17, 0.6);
+    backdrop-filter: blur(10px);
     padding: 50px;
-    border-radius: 0;
-    box-shadow: none;
-    transition: all 0.3s;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.06), transparent 40%);
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+}
+
+.feature-card:hover::before {
+    opacity: 1;
 }
 
 .feature-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-5px);
     border-color: var(--primary-color);
-    background: linear-gradient(145deg, #111111, #161616);
+    box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.3);
 }
 
 .card-icon {
     width: 70px;
     height: 70px;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 0;
+    background-color: rgba(59, 130, 246, 0.1);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 30px;
-    border: 1px solid var(--border-color);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .card-icon {
+    background-color: var(--primary-color);
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
 }
 
 .card-icon i {
     font-size: 1.8rem;
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .card-icon i {
     color: var(--white);
 }
 
@@ -575,6 +607,7 @@ body.clicking .cursor-dot {
     margin-bottom: 25px;
     font-size: 1.8rem;
     color: var(--white);
+    font-weight: 700;
 }
 
 .feature-card ul li {
@@ -584,11 +617,20 @@ body.clicking .cursor-dot {
     align-items: center;
     gap: 15px;
     font-size: 1rem;
+    transition: transform 0.2s;
+}
+
+.feature-card ul li:hover {
+    transform: translateX(5px);
+    color: var(--white);
 }
 
 .feature-card ul li i {
-    color: var(--primary-color);
-    font-size: 0.8rem;
+    color: var(--success);
+    font-size: 0.9rem;
+    background: rgba(52, 211, 153, 0.1);
+    padding: 5px;
+    border-radius: 50%;
 }
 
 /* Team Section */
