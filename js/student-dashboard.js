@@ -17,14 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentDateElement) {
         currentDateElement.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
-});
 
-function logout() {
-    sessionStorage.clear();
-    window.location.href = 'login.html';
-}
-
-// Custom Cursor Logic
+    // Custom Cursor Logic
     const cursorDot = document.querySelector('.cursor-dot');
     const cursorOutline = document.querySelector('.cursor-outline');
 
@@ -63,3 +57,9 @@ function logout() {
             document.body.classList.remove('clicking');
         });
     }
+});
+
+function logout() {
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+}
