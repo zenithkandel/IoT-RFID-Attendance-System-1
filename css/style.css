@@ -48,16 +48,17 @@ ul {
 
 /* Navbar */
 .navbar {
-    background: rgba(5, 5, 5, 0.8);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-color);
+    background: rgba(5, 5, 5, 0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     position: fixed;
     width: 100%;
     top: 0;
     z-index: 1000;
-    height: 80px;
+    height: 70px;
     display: flex;
     align-items: center;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .navbar .container {
@@ -68,49 +69,85 @@ ul {
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 700;
     color: var(--white);
     text-transform: uppercase;
     letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo i {
+    color: var(--primary-color);
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.5));
 }
 
 .logo span {
-    color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 4px;
+    margin-left: 10px;
 }
 
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 30px;
 }
 
 .nav-links a {
     font-weight: 500;
     color: var(--text-light);
-    transition: color 0.3s;
-    font-size: 0.95rem;
+    transition: all 0.3s;
+    font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: relative;
+    padding: 5px 0;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
 }
 
 .nav-links a:hover {
     color: var(--white);
 }
 
+.nav-links a:hover::after {
+    width: 100%;
+}
+
 .btn-login {
-    background-color: transparent;
-    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--white) !important;
-    padding: 10px 25px;
-    border-radius: 0;
+    padding: 8px 20px;
+    border-radius: 6px;
     transition: all 0.3s;
 }
 
 .btn-login:hover {
-    background-color: var(--white);
-    color: var(--bg-dark) !important;
-    border-color: var(--white);
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}
+
+.btn-login::after {
+    display: none;
 }
 
 .hamburger {
