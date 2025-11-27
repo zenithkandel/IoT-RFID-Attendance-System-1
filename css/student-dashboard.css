@@ -194,29 +194,36 @@ body {
 }
 
 .calendar-day.present::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    width: 4px;
-    height: 4px;
-    background: var(--success);
-    border-radius: 50%;
+    display: none;
 }
 
 .calendar-day.absent::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    width: 4px;
-    height: 4px;
-    background: var(--danger);
-    border-radius: 50%;
+    display: none;
 }
 
 .calendar-legend {
     margin-top: 15px;
     font-size: 0.8rem;
+    display: flex;
+    gap: 20px;
+    justify-content: flex-end;
 }
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot.present { background: var(--success); }
+.dot.absent { background: var(--danger); }
 
 /* Check Date Section - Horizontal Layout */
 .check-date-section {
@@ -233,24 +240,28 @@ body {
 }
 
 .date-checker-container {
-    flex-direction: row;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .check-date-section .input-group {
-    flex: 1;
+    display: flex;
+    gap: 10px;
+    width: 100%;
 }
 
 .date-input {
     padding: 10px 15px;
     font-size: 0.9rem;
-    min-width: 150px;
+    flex: 1;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--white);
     border-radius: 8px;
     outline: none;
     transition: all 0.3s ease;
+    min-width: 0; /* Allow flex item to shrink */
 }
 
 .date-input:focus {
