@@ -55,25 +55,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Login Form Submission
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const btn = loginForm.querySelector('.btn-login-submit');
-            const originalContent = btn.innerHTML;
-            
-            // Loading state
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Signing In...';
-            btn.style.opacity = '0.8';
-            btn.disabled = true;
-
-            // Simulate API call
-            setTimeout(() => {
-                // Redirect to dashboard
-                window.location.href = 'dashboard.html';
-            }, 1500);
-        });
-    }
+    // Login Form Submission logic moved to loginHandler.js
 });
