@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
     initTheme();
     updateDate();
+    initSearch();
+    initReports();
     
     // Fetch Data
     fetchAdminData();
@@ -143,6 +145,10 @@ function initTheme() {
     });
 }
 
+let globalStudents = [];
+let globalLogs = [];
+let globalStudentMap = {};
+
 // Placeholder for data fetching
 async function fetchAdminData() {
     const databaseUrl = 'https://docs.google.com/spreadsheets/d/1S7L_hKo5LJW6bOPKvxLMkXVSiP4V1CH5rfX6xYqAhBE/gviz/tq?sheet=database&tqx=out:json';
@@ -170,6 +176,9 @@ async function fetchAdminData() {
 }
 
 function processAdminData(students, logs) {
+    // Store globally
+    globalStudents = students;
+    
     // 1. Total Students
     const totalStudents = students.length;
     document.getElementById('totalStudents').textContent = totalStudents;
@@ -201,6 +210,8 @@ function processAdminData(students, logs) {
             };
         }
     });
+    
+    globalStudentMap = studentMap;
 
     // Populate Student Table
     const studentsTableBody = document.getElementById('studentsTable');
@@ -248,6 +259,8 @@ function processAdminData(students, logs) {
             }
         }
     }
+    
+    globalLogs = allLogs;
 
     // Update Stats
     const presentCount = presentSet.size;
@@ -296,4 +309,149 @@ function refreshData() {
     fetchAdminData().then(() => {
         setTimeout(() => btn.classList.remove('fa-spin'), 500);
     });
+}
+
+function initSearch() {
+    // Log Search
+    const logSearch = document.getElementById('logSearch');
+    if (logSearch) {
+        logSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const tableBody = document.getElementById('fullLogsTable');
+            const rows = tableBody.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+
+    // Student Search
+    const studentSearch = document.getElementById('studentSearch');
+    if (studentSearch) {
+        studentSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const tableBody = document.getElementById('studentsTable');
+            const rows = tableBody.getElementsByTagName('tr');
+
+            Array.from(rows).forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    }
+}
+
+function initReports() {
+    // Daily Report (CSV)
+    const btnDaily = document.getElementById('btnDownloadDaily');
+    if (btnDaily) {
+        btnDaily.addEventListener('click', () => {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const dailyLogs = globalLogs.filter(log => log.date === todayStr);
+            
+            if (dailyLogs.length === 0) {
+                alert('No attendance records found for today.');
+                return;
+            }
+
+            const headers = ['Date', 'Time', 'Name', 'Roll No', 'Class', 'Status'];
+            const data = dailyLogs.map(log => [
+                log.date,
+                log.time,
+                log.name,
+                log.roll,
+                log.class,
+                log.status
+            ]);
+
+            downloadCSV([headers, ...data], `attendance_daily_${todayStr}.csv`);
+        });
+    }
+
+    // Monthly Report (Excel/CSV)
+    const btnMonthly = document.getElementById('btnDownloadMonthly');
+    if (btnMonthly) {
+        btnMonthly.addEventListener('click', () => {
+            const today = new Date();
+            const currentMonth = today.getMonth() + 1; // 1-12
+            const currentYear = today.getFullYear();
+            
+            const monthlyLogs = globalLogs.filter(log => {
+                const logDate = new Date(log.date);
+                return (logDate.getMonth() + 1) === currentMonth && logDate.getFullYear() === currentYear;
+            });
+
+            if (monthlyLogs.length === 0) {
+                alert('No attendance records found for this month.');
+                return;
+            }
+
+            const headers = ['Date', 'Time', 'Name', 'Roll No', 'Class', 'Status'];
+            const data = monthlyLogs.map(log => [
+                log.date,
+                log.time,
+                log.name,
+                log.roll,
+                log.class,
+                log.status
+            ]);
+
+            downloadCSV([headers, ...data], `attendance_monthly_${currentYear}_${currentMonth}.csv`);
+        });
+    }
+
+    // Absentees List
+    const btnAbsentees = document.getElementById('btnViewAbsentees');
+    if (btnAbsentees) {
+        btnAbsentees.addEventListener('click', () => {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const presentRolls = new Set(globalLogs
+                .filter(log => log.date === todayStr)
+                .map(log => log.roll));
+            
+            const absentees = [];
+            
+            // Iterate over all students to find who is missing
+            for (const roll in globalStudentMap) {
+                if (!presentRolls.has(roll)) {
+                    const s = globalStudentMap[roll];
+                    absentees.push([
+                        todayStr,
+                        s.name,
+                        roll,
+                        s.class,
+                        'Absent'
+                    ]);
+                }
+            }
+
+            if (absentees.length === 0) {
+                alert('Everyone is present today!');
+                return;
+            }
+
+            const headers = ['Date', 'Name', 'Roll No', 'Class', 'Status'];
+            downloadCSV([headers, ...absentees], `absentees_${todayStr}.csv`);
+        });
+    }
+}
+
+function downloadCSV(data, filename) {
+    const csvContent = data.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }
