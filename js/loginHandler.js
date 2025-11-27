@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const username = usernameInput.value.trim();
             const password = passwordInput.value.trim();
+            const errorDiv = document.getElementById('login-error');
+
+            // Clear previous errors
+            errorDiv.textContent = '';
+            errorDiv.classList.remove('visible');
 
             // Loading state
             btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Signing In...';
