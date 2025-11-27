@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add hover effect to interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, .btn, .feature-card, .stat-card');
+    const interactiveElements = document.querySelectorAll('a, button, .btn, .feature-card, .stat-card, .team-card');
     
     interactiveElements.forEach(el => {
         el.addEventListener('mouseenter', () => {
