@@ -206,3 +206,52 @@ function renderCalendar(month, year) {
         calendarGrid.appendChild(dateDiv);
     }
 }
+
+async function fetchStudentDetails(studentRoll) {
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1S7L_hKo5LJW6bOPKvxLMkXVSiP4V1CH5rfX6xYqAhBE/gviz/tq?sheet=database&tqx=out:json';
+
+    try {
+        const response = await fetch(sheetUrl);
+        const text = await response.text();
+        const jsonString = text.substring(47).slice(0, -2);
+        const json = JSON.parse(jsonString);
+        
+        const rows = json.table.rows;
+        
+        // Database Sheet Columns:
+        // 0: UID, 1: Name, 2: Roll No, 3: Class, 4: Address
+        
+        let studentFound = false;
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            const rollCell = row.c[2]; // Column C is Roll No
+            
+            // Check if roll number matches (handle both number and string types)
+            if (rollCell && (String(rollCell.v) === String(studentRoll) || rollCell.f === String(studentRoll))) {
+                studentFound = true;
+                
+                const uid = row.c[0] ? (row.c[0].v || 'N/A') : 'N/A';
+                const name = row.c[1] ? (row.c[1].v || 'Student') : 'Student';
+                const className = row.c[3] ? (row.c[3].v || 'N/A') : 'N/A';
+                const address = row.c[4] ? (row.c[4].v || 'N/A') : 'N/A';
+                
+                // Update DOM
+                document.getElementById('studentName').textContent = `Welcome, ${name}`;
+                document.getElementById('studentClass').textContent = className;
+                document.getElementById('studentUID').textContent = uid;
+                document.getElementById('studentAddress').textContent = address;
+                
+                break;
+            }
+        }
+
+        if (!studentFound) {
+            console.warn('Student details not found for roll:', studentRoll);
+            document.getElementById('studentName').textContent = 'Welcome, Student';
+        }
+
+    } catch (error) {
+        console.error('Error fetching student details:', error);
+    }
+}
