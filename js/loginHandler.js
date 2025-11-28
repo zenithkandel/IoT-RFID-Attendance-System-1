@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             break;
                         }
                     } else {
+                        
                         // fallback: search any cell in the row
                         for (let j = 0; j < (row.c || []).length; j++) {
                             const cell = row.c[j];
