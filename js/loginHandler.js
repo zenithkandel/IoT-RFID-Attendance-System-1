@@ -3,12 +3,23 @@ document.addEventListener('DOMContentLoaded', () => {
     sessionStorage.clear();
 
     const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('username');
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+
+    // Check for saved username
+    if (usernameInput) {
+        const savedUsername = localStorage.getItem('rememberedUsername');
+        if (savedUsername) {
+            usernameInput.value = savedUsername;
+            if (rememberMeCheckbox) rememberMeCheckbox.checked = true;
+        }
+    }
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const usernameInput = document.getElementById('username');
+            // const usernameInput = document.getElementById('username'); // Already defined above
             const passwordInput = document.getElementById('password');
             const btn = loginForm.querySelector('.btn-login-submit');
             const originalBtnContent = btn.innerHTML;
@@ -30,6 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ADMIN flow
                 if (username === 'admin') {
                     if (password === 'admin@123') {
+                        if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+                            localStorage.setItem('rememberedUsername', username);
+                        } else {
+                            localStorage.removeItem('rememberedUsername');
+                        }
                         sessionStorage.setItem('isLoggedIn', 'true');
                         sessionStorage.setItem('userRole', 'admin');
                         setTimeout(() => window.location.href = 'admin-dashboard.html', 800);
@@ -116,6 +132,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 // Success: set session and redirect
+                if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+                    localStorage.setItem('rememberedUsername', username);
+                } else {
+                    localStorage.removeItem('rememberedUsername');
+                }
+                
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('userRole', 'student');
                 sessionStorage.setItem('studentId', username);
