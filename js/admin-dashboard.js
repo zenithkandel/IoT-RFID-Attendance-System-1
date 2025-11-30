@@ -13,6 +13,25 @@ document.addEventListener('DOMContentLoaded', () => {
     initSearch();
     initReports();
     
+    // Mobile Sidebar Toggle
+    const mobileToggle = document.querySelector('.mobile-toggle');
+    const sidebar = document.querySelector('.sidebar');
+
+    if (mobileToggle && sidebar) {
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target) && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+    }
+    
     // Fetch Data
     fetchAdminData();
 

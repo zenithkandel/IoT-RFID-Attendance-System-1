@@ -1125,44 +1125,122 @@ footer .container {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .container {
+        padding: 0 30px;
+    }
+    
+    .hero-content h1 {
+        font-size: 3.5rem;
+    }
+    
+    .about-content {
+        gap: 40px;
+    }
+}
+
 @media (max-width: 768px) {
     .navbar .nav-links {
-        display: none;
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 70px);
+        background: var(--bg-dark);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+        border-top: 1px solid var(--border-color);
+        backdrop-filter: blur(10px);
+    }
+
+    .navbar .nav-links.active {
+        transform: translateX(0);
+        display: flex;
     }
     
     .hamburger {
         display: block;
+        z-index: 1001;
+    }
+    
+    .hamburger.active i::before {
+        content: "\f00d"; /* FontAwesome 'times' icon */
     }
 
     .hero .container {
         flex-direction: column-reverse;
         text-align: center;
+        justify-content: center;
+        padding-top: 100px;
+    }
+
+    .hero-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .hero-content h1 {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
+    }
+    
+    .hero-content p {
+        margin: 0 auto 40px;
     }
 
     .hero-btns {
         justify-content: center;
     }
 
-    .hero-image i {
-        font-size: 10rem;
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: 60px;
+    }
+    
+    .simulation-container {
+        transform: scale(0.8);
+        height: 300px;
+        margin-bottom: 20px;
     }
 
     footer .container {
         flex-direction: column;
         gap: 20px;
     }
+}
 
-    .about-content {
-        grid-template-columns: 1fr;
-        gap: 50px;
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 2.2rem;
     }
-
+    
+    .hero-btns {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+    
     .simulation-container {
-        transform: scale(1);
-        height: 350px;
+        transform: scale(0.6);
+    }
+    
+    .team-card {
+        width: 100%;
     }
 }
