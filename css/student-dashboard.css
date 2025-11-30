@@ -293,11 +293,37 @@ body {
 }
 
 .date-result {
-    padding: 10px 20px;
+    padding: 12px 20px;
     min-height: auto;
-    height: 42px;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     flex: 1;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--text-light);
+    transition: all 0.3s ease;
+}
+
+.date-result.present {
+    background: var(--bg-present);
+    border-color: var(--success);
+    color: var(--success);
+    box-shadow: 0 0 15px rgba(52, 211, 153, 0.1);
+}
+
+.date-result.absent {
+    background: var(--bg-absent);
+    border-color: var(--danger);
+    color: var(--danger);
+    box-shadow: 0 0 15px rgba(248, 113, 113, 0.1);
+}
+
+.date-result i {
+    font-size: 1.1rem;
 }
 
 /* Responsive */
