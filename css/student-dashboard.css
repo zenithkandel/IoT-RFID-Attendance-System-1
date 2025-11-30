@@ -144,9 +144,26 @@ body {
 }
 
 .month-nav button {
-    width: 30px;
-    height: 30px;
-    font-size: 0.8rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.month-nav button:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
 }
 
 .calendar-grid {
