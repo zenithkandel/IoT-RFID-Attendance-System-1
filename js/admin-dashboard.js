@@ -429,6 +429,67 @@ function updateCharts(logs, students) {
             }
         });
     }
+
+    // 3. Class Summary Table
+    const classSummaryTable = document.getElementById('classSummaryTable');
+    if (classSummaryTable) {
+        classSummaryTable.innerHTML = '';
+        
+        // Calculate stats per class
+        const classStats = {};
+        
+        // Initialize with total students from global student list
+        // We need to re-parse students because the raw 'students' array passed here 
+        // has columns: 0:UID, 1:Name, 2:Roll, 3:Class, 4:Address
+        students.forEach(row => {
+            const cls = row.c[3] ? (typeof row.c[3].v === 'string' ? row.c[3].v : String(row.c[3].v)) : 'Unknown';
+            // Normalize class name (Title Case)
+            const className = cls.charAt(0).toUpperCase() + cls.slice(1).toLowerCase();
+            
+            if (!classStats[className]) classStats[className] = { total: 0, present: 0 };
+            classStats[className].total++;
+        });
+        
+        // Count present from today's logs
+        // Note: todayLogs was calculated in step 2, but scope is local. Re-calculating or reusing if possible.
+        // Let's just re-filter for safety as I can't easily access the previous block's variable without restructuring.
+        const todayStrForTable = new Date().toISOString().split('T')[0];
+        const todayLogsForTable = logs.filter(log => log.date === todayStrForTable);
+
+        todayLogsForTable.forEach(log => {
+            // log.class is already Title Cased in processAdminData
+            const cls = log.class || 'Unknown';
+            if (classStats[cls]) {
+                classStats[cls].present++;
+            } else {
+                // Handle case where class exists in logs but not in student db (rare)
+                if (!classStats[cls]) classStats[cls] = { total: 0, present: 0 };
+                classStats[cls].present++;
+            }
+        });
+        
+        // Render
+        Object.keys(classStats).sort().forEach(cls => {
+            const stats = classStats[cls];
+            const rate = stats.total > 0 ? Math.round((stats.present / stats.total) * 100) : 0;
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><span style="font-weight: 500;">${cls}</span></td>
+                <td>${stats.total}</td>
+                <td>${stats.present}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                            <div style="width: ${rate}%; height: 100%; background: ${rate >= 75 ? 'var(--success)' : (rate >= 50 ? 'var(--warning)' : 'var(--danger)')}; border-radius: 3px;"></div>
+                        </div>
+                        <span style="min-width: 35px; font-size: 0.9em;">${rate}%</span>
+                    </div>
+                </td>
+            `;
+            classSummaryTable.appendChild(tr);
+        });
+    }
 }
 
 function animateValue(obj, start, end, duration) {
