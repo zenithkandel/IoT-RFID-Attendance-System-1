@@ -336,7 +336,7 @@ function updateCharts(logs, students) {
     for (let i = 6; i >= 0; i--) {
         const d = new Date();
         d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
+        const dateStr = d.toLocaleDateString('en-CA');
         last7Days.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
         
         // Count unique students present on this date
@@ -369,6 +369,7 @@ function updateCharts(logs, students) {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false }
                 },
@@ -376,7 +377,7 @@ function updateCharts(logs, students) {
                     y: {
                         beginAtZero: true,
                         grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#8898aa' }
+                        ticks: { color: '#8898aa', stepSize: 1 }
                     },
                     x: {
                         grid: { display: false },
@@ -388,49 +389,75 @@ function updateCharts(logs, students) {
     }
 
     // 2. Class Distribution (Today)
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = new Date().toLocaleDateString('en-CA');
     const todayLogs = logs.filter(log => log.date === todayStr);
     
-    const classCounts = {};
-    todayLogs.forEach(log => {
-        const cls = log.class || 'Unknown';
-        classCounts[cls] = (classCounts[cls] || 0) + 1;
-    });
-
-    const classLabels = Object.keys(classCounts);
-    const classData = Object.values(classCounts);
-    
-    // Generate random colors for classes
-    const backgroundColors = [
-        '#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4cc9f0', '#2ec4b6'
-    ];
-
     const ctxClass = document.getElementById('classDistributionChart');
-    if (ctxClass) {
+    // Get the wrapper div we added in HTML (the one with height: 300px)
+    const chartContainer = ctxClass ? ctxClass.parentElement : null;
+    
+    // Remove existing empty message if any
+    if (chartContainer) {
+        const existingMsg = chartContainer.querySelector('.no-data-message');
+        if (existingMsg) existingMsg.remove();
+    }
+
+    if (ctxClass && chartContainer) {
         if (window.classChartInstance) window.classChartInstance.destroy();
 
-        window.classChartInstance = new Chart(ctxClass, {
-            type: 'doughnut',
-            data: {
-                labels: classLabels,
-                datasets: [{
-                    data: classData,
-                    backgroundColor: backgroundColors.slice(0, classLabels.length),
-                    borderWidth: 0,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                cutout: '70%',
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: { color: '#8898aa', usePointStyle: true }
+        if (todayLogs.length === 0) {
+            // Show Empty State
+            ctxClass.style.display = 'none';
+            const msg = document.createElement('div');
+            msg.className = 'no-data-message';
+            msg.style.cssText = 'position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: var(--text-secondary); width: 100%;';
+            msg.innerHTML = `
+                <i class="fas fa-chart-pie" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                <p>No attendance data available for today.</p>
+            `;
+            chartContainer.appendChild(msg);
+        } else {
+            // Show Chart
+            ctxClass.style.display = 'block';
+            
+            const classCounts = {};
+            todayLogs.forEach(log => {
+                const cls = log.class || 'Unknown';
+                classCounts[cls] = (classCounts[cls] || 0) + 1;
+            });
+
+            const classLabels = Object.keys(classCounts);
+            const classData = Object.values(classCounts);
+            
+            // Generate random colors for classes
+            const backgroundColors = [
+                '#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4cc9f0', '#2ec4b6'
+            ];
+
+            window.classChartInstance = new Chart(ctxClass, {
+                type: 'doughnut',
+                data: {
+                    labels: classLabels,
+                    datasets: [{
+                        data: classData,
+                        backgroundColor: backgroundColors.slice(0, classLabels.length),
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: { color: '#8898aa', usePointStyle: true, padding: 20 }
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     // 3. Class Summary Table
