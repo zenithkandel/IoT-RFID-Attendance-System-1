@@ -143,6 +143,11 @@ body {
     color: var(--text-dark);
 }
 
+.month-nav {
+    display: flex;
+    gap: 10px;
+}
+
 .month-nav button {
     width: 32px;
     height: 32px;
