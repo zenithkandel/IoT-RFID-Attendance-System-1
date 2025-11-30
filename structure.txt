@@ -9,7 +9,7 @@ Event:      Tech Expo Demonstration
 Date:       November 2025
 
 Developers: 
-  - Sakshyam Bastakoti (Hardware Engineer) - https://github.com/sakshyambastakoti
+  - Sakshyam Bastakoti (Hardware Engineer) - https://github.com/they-call-me-electronerd
   - Zenith Kandel (Software Engineer) - https://github.com/zenithkandel
 
 ================================================================================
@@ -111,7 +111,7 @@ STUDENT (Student Portal)
 Edu Track Pro Team
 
 Hardware Engineer: Sakshyam Bastakoti
-GitHub: https://github.com/sakshyambastakoti
+GitHub: https://github.com/they-call-me-electronerd
 
 Software Engineer: Zenith Kandel
 GitHub: https://github.com/zenithkandel
