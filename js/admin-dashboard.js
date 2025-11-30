@@ -320,6 +320,115 @@ function processAdminData(students, logs) {
         `;
         fullLogsTableBody.appendChild(tr);
     });
+
+    // Generate Charts
+    updateCharts(allLogs, students);
+}
+
+function updateCharts(logs, students) {
+    // 1. Attendance Trends (Last 7 Days)
+    const last7Days = [];
+    const trendData = [];
+    
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dateStr = d.toISOString().split('T')[0];
+        last7Days.push(d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+        
+        // Count unique students present on this date
+        const presentOnDate = new Set(
+            logs.filter(log => log.date === dateStr).map(log => log.roll)
+        );
+        trendData.push(presentOnDate.size);
+    }
+
+    const ctxTrend = document.getElementById('attendanceTrendChart');
+    if (ctxTrend) {
+        // Destroy existing chart if any
+        if (window.trendChartInstance) window.trendChartInstance.destroy();
+
+        window.trendChartInstance = new Chart(ctxTrend, {
+            type: 'line',
+            data: {
+                labels: last7Days,
+                datasets: [{
+                    label: 'Students Present',
+                    data: trendData,
+                    borderColor: '#4361ee',
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#4361ee',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#8898aa' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#8898aa' }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Class Distribution (Today)
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayLogs = logs.filter(log => log.date === todayStr);
+    
+    const classCounts = {};
+    todayLogs.forEach(log => {
+        const cls = log.class || 'Unknown';
+        classCounts[cls] = (classCounts[cls] || 0) + 1;
+    });
+
+    const classLabels = Object.keys(classCounts);
+    const classData = Object.values(classCounts);
+    
+    // Generate random colors for classes
+    const backgroundColors = [
+        '#4361ee', '#3a0ca3', '#7209b7', '#f72585', '#4cc9f0', '#2ec4b6'
+    ];
+
+    const ctxClass = document.getElementById('classDistributionChart');
+    if (ctxClass) {
+        if (window.classChartInstance) window.classChartInstance.destroy();
+
+        window.classChartInstance = new Chart(ctxClass, {
+            type: 'doughnut',
+            data: {
+                labels: classLabels,
+                datasets: [{
+                    data: classData,
+                    backgroundColor: backgroundColors.slice(0, classLabels.length),
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#8898aa', usePointStyle: true }
+                    }
+                }
+            }
+        });
+    }
 }
 
 function animateValue(obj, start, end, duration) {
