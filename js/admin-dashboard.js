@@ -551,7 +551,7 @@ function initReports() {
     const btnDaily = document.getElementById('btnDownloadDaily');
     if (btnDaily) {
         btnDaily.addEventListener('click', () => {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = new Date().toLocaleDateString('en-CA');
             const dailyLogs = globalLogs.filter(log => log.date === todayStr);
             
             if (dailyLogs.length === 0) {
@@ -609,7 +609,7 @@ function initReports() {
     const btnAbsentees = document.getElementById('btnViewAbsentees');
     if (btnAbsentees) {
         btnAbsentees.addEventListener('click', () => {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = new Date().toLocaleDateString('en-CA');
             const presentRolls = new Set(globalLogs
                 .filter(log => log.date === todayStr)
                 .map(log => log.roll));
