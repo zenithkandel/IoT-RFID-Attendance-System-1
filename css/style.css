@@ -167,7 +167,7 @@ ul {
     width: 100%;
 }
 
-.btn-login {
+.nav-links .btn-login {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--white) !important;
@@ -176,13 +176,13 @@ ul {
     transition: all 0.3s;
 }
 
-.btn-login:hover {
+.nav-links .btn-login:hover {
     background: var(--primary-color);
     border-color: var(--primary-color);
     box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
 }
 
-.btn-login::after {
+.nav-links .btn-login::after {
     display: none;
 }
 
