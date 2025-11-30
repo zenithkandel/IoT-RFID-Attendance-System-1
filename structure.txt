@@ -3,15 +3,14 @@
               IoT-Based RFID Smart Attendance System
 ================================================================================
 
-Project By: Robotics Club of Kathmandu Model Secondary School (KMSS)
-            Bagbazar, Kathmandu, Nepal
+Project By: Edu Track Pro Team
 
-Event:      Tech Expo Demonstration - KMSS Lalitpur
+Event:      Tech Expo Demonstration
 Date:       November 2025
 
-Original Authors: 
-  - Sakshyam Bastakoti (https://github.com/sakshyambastakoti)
-  - Robotics Club Team Members
+Developers: 
+  - Sakshyam Bastakoti (Hardware Engineer) - https://github.com/sakshyambastakoti
+  - Zenith Kandel (Software Engineer) - https://github.com/zenithkandel
 
 ================================================================================
                         PROJECT OVERVIEW
@@ -109,14 +108,15 @@ STUDENT (Student Portal)
                         CONTACT & CREDITS
 ================================================================================
 
-Robotics Club - KMSS Bagbazar
-Kathmandu Model Secondary School
-Bagbazar, Kathmandu, Nepal
+Edu Track Pro Team
 
-Original Developer: Sakshyam Bastakoti
+Hardware Engineer: Sakshyam Bastakoti
 GitHub: https://github.com/sakshyambastakoti
+
+Software Engineer: Zenith Kandel
+GitHub: https://github.com/zenithkandel
 
 ================================================================================
                            © 2025 EDU TRACK PRO
-              Robotics Club, KMSS Bagbazar - All Rights Reserved
+              Edu Track Pro Team - All Rights Reserved
 ================================================================================
