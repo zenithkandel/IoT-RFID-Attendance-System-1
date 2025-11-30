@@ -229,6 +229,7 @@ async function fetchAttendanceData(studentRoll) {
             statusCard.style.borderColor = 'var(--success)';
             statusCard.style.color = 'var(--success)';
             statusCard.style.background = 'rgba(52, 211, 153, 0.1)';
+            triggerConfetti();
         } else {
             statusHeader.innerHTML = '<i class="fas fa-times-circle"></i> Today\'s Status';
             statusText.textContent = 'Not Marked Yet';
@@ -299,7 +300,38 @@ function renderCalendar(month, year) {
             }
         }
         
+        dateDiv.style.animationDelay = `${day * 0.03}s`; // Staggered animation
         calendarGrid.appendChild(dateDiv);
+    }
+}
+
+function triggerConfetti() {
+    const container = document.getElementById('confetti-container');
+    if (!container) return;
+
+    const colors = ['#34d399', '#60a5fa', '#f472b6', '#fbbf24'];
+    
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        
+        // Random properties
+        const bg = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100 + 'vw';
+        const animDuration = Math.random() * 3 + 2 + 's';
+        const animDelay = Math.random() * 2 + 's';
+        
+        confetti.style.backgroundColor = bg;
+        confetti.style.left = left;
+        confetti.style.animationDuration = animDuration;
+        confetti.style.animationDelay = animDelay;
+        
+        container.appendChild(confetti);
+        
+        // Remove after animation
+        setTimeout(() => {
+            confetti.remove();
+        }, 5000);
     }
 }
 

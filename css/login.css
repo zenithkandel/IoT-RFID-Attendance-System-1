@@ -539,46 +539,81 @@ body {
     color: var(--primary-color);
 }
 
-/* Background Glows */
-.bg-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    z-index: 1;
-    opacity: 0.4;
+/* Animations */
+@keyframes rotate-ring {
+    0% { transform: translateX(-50%) rotateX(75deg) rotateZ(0deg); }
+    100% { transform: translateX(-50%) rotateX(75deg) rotateZ(360deg); }
 }
 
-.glow-1 {
-    width: 500px;
-    height: 500px;
-    background: var(--primary-color);
-    top: -100px;
-    left: -100px;
-    animation: float-glow 10s infinite alternate;
+@keyframes float-card {
+    0%, 100% { transform: translateX(-50%) rotateY(-15deg) rotateX(10deg) translateY(0); }
+    50% { transform: translateX(-50%) rotateY(-5deg) rotateX(5deg) translateY(-20px); }
 }
 
-.glow-2 {
-    width: 400px;
-    height: 400px;
-    background: var(--secondary-color);
-    bottom: -50px;
-    right: -50px;
-    animation: float-glow 8s infinite alternate-reverse;
+@keyframes shine {
+    0% { left: -150%; }
+    20% { left: 150%; }
+    100% { left: 150%; }
 }
 
-@keyframes float-glow {
+@keyframes ripple {
+    0% { width: 0; height: 0; opacity: 0.8; }
+    100% { width: 300px; height: 300px; opacity: 0; }
+}
+
+@keyframes float-particle {
     0% { transform: translate(0, 0); }
-    100% { transform: translate(50px, 50px); }
+    25% { transform: translate(50px, 50px); }
+    50% { transform: translate(0, 100px); }
+    75% { transform: translate(-50px, 50px); }
+    100% { transform: translate(0, 0); }
+}
+
+@keyframes pulse-base {
+    0%, 100% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.1); opacity: 0.8; }
+    50% { box-shadow: 0 0 60px rgba(59, 130, 246, 0.2); opacity: 1; }
+}
+
+@keyframes float-up {
+    0% { transform: translateY(20px); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(-20px); opacity: 0; }
+}
+
+@keyframes slide-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .login-visual {
+        display: none;
+    }
+    
+    .login-section {
+        flex: 1;
+        width: 100%;
+        background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    }
+    
+    .login-card {
+        max-width: 400px;
+        background: rgba(17, 17, 17, 0.8);
+    }
+}
+
 @media (max-width: 480px) {
     .login-card {
         padding: 30px 20px;
+        border: none;
+        background: transparent;
+        box-shadow: none;
     }
     
     .login-header h2 {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
     }
 }
 
