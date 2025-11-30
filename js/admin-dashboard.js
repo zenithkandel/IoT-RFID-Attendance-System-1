@@ -200,7 +200,7 @@ function processAdminData(students, logs) {
     
     // 1. Total Students
     const totalStudents = students.length;
-    document.getElementById('totalStudents').textContent = totalStudents;
+    animateValue(document.getElementById('totalStudents'), 0, totalStudents, 1000);
 
     // 2. Process Logs & Today's Stats
     const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -286,8 +286,8 @@ function processAdminData(students, logs) {
     const absentCount = totalStudents - presentCount;
     const attendanceRate = totalStudents > 0 ? Math.round((presentCount / totalStudents) * 100) : 0;
 
-    document.getElementById('presentToday').textContent = presentCount;
-    document.getElementById('absentToday').textContent = absentCount;
+    animateValue(document.getElementById('presentToday'), 0, presentCount, 1000);
+    animateValue(document.getElementById('absentToday'), 0, absentCount, 1000);
     document.getElementById('attendanceRate').textContent = `${attendanceRate}%`;
     document.getElementById('attendanceRateBar').style.width = `${attendanceRate}%`;
 
@@ -320,6 +320,19 @@ function processAdminData(students, logs) {
         `;
         fullLogsTableBody.appendChild(tr);
     });
+}
+
+function animateValue(obj, start, end, duration) {
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        obj.innerHTML = Math.floor(progress * (end - start) + start);
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
 }
 
 function refreshData() {
