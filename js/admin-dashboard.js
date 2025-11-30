@@ -203,7 +203,10 @@ function processAdminData(students, logs) {
     animateValue(document.getElementById('totalStudents'), 0, totalStudents, 1000);
 
     // 2. Process Logs & Today's Stats
-    const todayStr = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    // Use local date to ensure we match the user's timezone, not UTC
+    const today = new Date();
+    const todayStr = today.toLocaleDateString('en-CA'); // Returns YYYY-MM-DD in local time
+    
     const presentSet = new Set();
     const recentLogs = [];
     const allLogs = [];
@@ -451,9 +454,7 @@ function updateCharts(logs, students) {
         });
         
         // Count present from today's logs
-        // Note: todayLogs was calculated in step 2, but scope is local. Re-calculating or reusing if possible.
-        // Let's just re-filter for safety as I can't easily access the previous block's variable without restructuring.
-        const todayStrForTable = new Date().toISOString().split('T')[0];
+        const todayStrForTable = new Date().toLocaleDateString('en-CA');
         const todayLogsForTable = logs.filter(log => log.date === todayStrForTable);
 
         todayLogsForTable.forEach(log => {
