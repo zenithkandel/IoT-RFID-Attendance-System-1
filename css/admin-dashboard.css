@@ -448,23 +448,24 @@ body {
 /* Students Grid */
 .students-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px 0;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 24px 0;
 }
 
 .student-card {
-    background: var(--bg-surface);
+    background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    padding: 28px 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .student-card::before {
@@ -472,42 +473,60 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 4px;
+    right: 0;
+    height: 3px;
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .student-card:hover::before {
-    transform: scaleX(1);
+    opacity: 1;
 }
 
 .student-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    border-color: var(--primary-color);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    border-color: rgba(59, 130, 246, 0.3);
 }
 
 .student-avatar {
-    width: 80px;
-    height: 80px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
-    font-size: 2rem;
+    margin-bottom: 16px;
+    font-size: 1.8rem;
     color: white;
-    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.student-avatar::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .student-card:hover .student-avatar {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+    transform: scale(1.08);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.student-card:hover .student-avatar::after {
+    opacity: 0.3;
 }
 
 .student-info {
@@ -515,61 +534,81 @@ body {
 }
 
 .student-name {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--text-dark);
-    margin-bottom: 8px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
 }
 
 .student-details {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 16px;
 }
 
 .student-detail-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
-    background: var(--bg-card);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    border: 1px solid var(--border-color);
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.student-detail-item:hover {
+    background: rgba(59, 130, 246, 0.04);
+    border-color: rgba(59, 130, 246, 0.1);
 }
 
 .student-detail-label {
     color: var(--text-light);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     font-weight: 500;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .student-detail-label i {
     color: var(--primary-color);
-    font-size: 0.9rem;
-    width: 16px;
+    font-size: 0.85rem;
+    width: 14px;
+    opacity: 0.8;
 }
 
 .student-detail-value {
     color: var(--text-dark);
     font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .student-uid {
+    background: rgba(59, 130, 246, 0.06);
+    border-color: rgba(59, 130, 246, 0.15);
+}
+
+.student-uid:hover {
     background: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.25);
+}
+
+.student-uid .student-detail-label i {
+    opacity: 1;
 }
 
 .student-uid .student-detail-value {
     font-family: 'Space Grotesk', monospace;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     color: var(--primary-color);
+    letter-spacing: 0.5px;
 }
 
 /* Responsive */
