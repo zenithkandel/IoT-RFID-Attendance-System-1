@@ -66,6 +66,9 @@ function updateNavbarForAdmin() {
     if (logoBadge) {
         logoBadge.textContent = 'Admin View';
         logoBadge.style.background = '#5B7BE9';
+        logoBadge.style.webkitBackgroundClip = 'unset';
+        logoBadge.style.backgroundClip = 'unset';
+        logoBadge.style.webkitTextFillColor = '#ffffff';
         logoBadge.style.color = '#ffffff';
         logoBadge.style.border = '1px solid rgba(91, 123, 233, 0.3)';
         logoBadge.style.fontWeight = '600';
