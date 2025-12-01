@@ -24,45 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Custom Cursor
-    const cursorDot = document.querySelector('.cursor-dot');
-    const cursorOutline = document.querySelector('.cursor-outline');
-
-    window.addEventListener('mousemove', (e) => {
-        const posX = e.clientX;
-        const posY = e.clientY;
-
-        cursorDot.style.left = `${posX}px`;
-        cursorDot.style.top = `${posY}px`;
-
-        // Add a slight delay for the outline to create a trailing effect
-        cursorOutline.animate({
-            left: `${posX}px`,
-            top: `${posY}px`
-        }, { duration: 500, fill: "forwards" });
-    });
-
-    // Add hover effect to interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, .btn, .feature-card, .stat-card, .team-card');
-    
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            document.body.classList.add('hovering');
-        });
-        el.addEventListener('mouseleave', () => {
-            document.body.classList.remove('hovering');
-        });
-    });
-
-    // Click effect
-    window.addEventListener('mousedown', () => {
-        document.body.classList.add('clicking');
-    });
-
-    window.addEventListener('mouseup', () => {
-        document.body.classList.remove('clicking');
-    });
-
     // Feature Card Spotlight Effect
     document.querySelectorAll('.feature-card').forEach(card => {
         card.addEventListener('mousemove', (e) => {

@@ -59,7 +59,6 @@ body {
     line-height: 1.6;
     color: var(--text-dark);
     background-color: var(--bg-dark);
-    cursor: none; /* Hide default cursor */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -479,54 +478,6 @@ ul {
     0% { opacity: 0; transform: rotate(45deg) translate(-5px, -5px); }
     50% { opacity: 1; }
     100% { opacity: 0; transform: rotate(45deg) translate(5px, 5px); }
-}
-
-/* Custom Cursor */
-.cursor-dot,
-.cursor-outline {
-    position: fixed;
-    top: 0;
-    left: 0;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    z-index: 9999;
-    pointer-events: none;
-}
-
-.cursor-dot {
-    width: 8px;
-    height: 8px;
-    background-color: var(--white);
-}
-
-.cursor-outline {
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--cursor-border);
-    transition: width 0.2s, height 0.2s, background-color 0.2s;
-}
-
-body:hover .cursor-outline {
-    opacity: 1;
-}
-
-/* Hover state for cursor */
-body.hovering .cursor-outline {
-    width: 60px;
-    height: 60px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: transparent;
-}
-
-/* Click state for cursor */
-body.clicking .cursor-outline {
-    width: 30px;
-    height: 30px;
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-body.clicking .cursor-dot {
-    transform: translate(-50%, -50%) scale(0.5);
 }
 
 /* About Section */
