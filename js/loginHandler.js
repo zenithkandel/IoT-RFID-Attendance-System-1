@@ -38,110 +38,48 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.disabled = true;
 
             try {
-                // ADMIN flow
-                if (username === 'admin') {
-                    if (password === 'admin@123') {
-                        if (rememberMeCheckbox && rememberMeCheckbox.checked) {
-                            localStorage.setItem('rememberedUsername', username);
-                        } else {
-                            localStorage.removeItem('rememberedUsername');
-                        }
-                        sessionStorage.setItem('isLoggedIn', 'true');
-                        sessionStorage.setItem('userRole', 'admin');
+                // Call the login API
+                const response = await fetch('API/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Remember username if checkbox is checked
+                    if (rememberMeCheckbox && rememberMeCheckbox.checked) {
+                        localStorage.setItem('rememberedUsername', username);
+                    } else {
+                        localStorage.removeItem('rememberedUsername');
+                    }
+
+                    // Store session data
+                    sessionStorage.setItem('isLoggedIn', 'true');
+                    sessionStorage.setItem('userRole', result.data.role);
+                    
+                    if (result.data.role === 'admin') {
+                        sessionStorage.setItem('username', result.data.username);
                         setTimeout(() => window.location.href = 'admin-dashboard.html', 800);
-                        return;
-                    } else {
-                        // Wrong password for admin
-                        throw new Error('wrong password');
+                    } else if (result.data.role === 'student') {
+                        sessionStorage.setItem('studentId', result.data.roll);
+                        sessionStorage.setItem('studentName', result.data.name);
+                        sessionStorage.setItem('studentClass', result.data.class);
+                        setTimeout(() => window.location.href = 'student-dashboard.html', 600);
                     }
-                }
-
-                // STUDENT flow
-                const sheetUrl = 'https://docs.google.com/spreadsheets/d/1S7L_hKo5LJW6bOPKvxLMkXVSiP4V1CH5rfX6xYqAhBE/gviz/tq?sheet=database&tqx=out:json';
-                let response;
-                try {
-                    response = await fetch(sheetUrl);
-                } catch (fetchErr) {
-                    throw new Error('something went wrong');
-                }
-
-                if (!response || !response.ok) {
-                    throw new Error('something went wrong');
-                }
-
-                let text;
-                try {
-                    text = await response.text();
-                } catch (tErr) {
-                    throw new Error('something went wrong');
-                }
-
-                // Parse Google Visualization API response
-                let json;
-                try {
-                    const jsonString = text.substring(47).slice(0, -2);
-                    json = JSON.parse(jsonString);
-                } catch (parseErr) {
-                    throw new Error('something went wrong');
-                }
-
-                const table = json.table;
-                const rows = table.rows || [];
-                const cols = table.cols || [];
-
-                // Find roll column index
-                let rollColIndex = -1;
-                for (let i = 0; i < cols.length; i++) {
-                    if (cols[i].label && cols[i].label.toLowerCase().includes('roll')) {
-                        rollColIndex = i;
-                        break;
-                    }
-                }
-
-                // Search for student by roll number (username)
-                let studentFound = false;
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    if (rollColIndex !== -1) {
-                        const cell = row.c[rollColIndex];
-                        if (cell && String(cell.v) === username) {
-                            studentFound = true;
-                            break;
-                        }
-                    } else {
-
-                        // fallback: search any cell in the row
-                        for (let j = 0; j < (row.c || []).length; j++) {
-                            const cell = row.c[j];
-                            if (cell && String(cell.v) === username) {
-                                studentFound = true;
-                                break;
-                            }
-                        }
-                        if (studentFound) break;
-                    }
-                }
-
-                if (!studentFound) {
-                    throw new Error('user not found');
-                }
-
-                // If student exists, validate password (default 'password')
-                if (password !== 'password') {
-                    throw new Error('wrong password');
-                }
-
-                // Success: set session and redirect
-                if (rememberMeCheckbox && rememberMeCheckbox.checked) {
-                    localStorage.setItem('rememberedUsername', username);
                 } else {
-                    localStorage.removeItem('rememberedUsername');
+                    throw new Error(result.message || 'Login failed');
                 }
-                
-                sessionStorage.setItem('isLoggedIn', 'true');
-                sessionStorage.setItem('userRole', 'student');
-                sessionStorage.setItem('studentId', username);
-                setTimeout(() => window.location.href = 'student-dashboard.html', 600);
 
             } catch (error) {
                 console.error('Login Error:', error);
