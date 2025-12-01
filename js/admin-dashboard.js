@@ -147,27 +147,29 @@ let globalStudentMap = {};
 
 // Placeholder for data fetching
 async function fetchAdminData() {
-    const databaseUrl = 'https://docs.google.com/spreadsheets/d/1S7L_hKo5LJW6bOPKvxLMkXVSiP4V1CH5rfX6xYqAhBE/gviz/tq?sheet=database&tqx=out:json';
-    const attendanceUrl = 'https://docs.google.com/spreadsheets/d/1S7L_hKo5LJW6bOPKvxLMkXVSiP4V1CH5rfX6xYqAhBE/gviz/tq?sheet=attendance&tqx=out:json';
-
     try {
-        // Fetch Database (Students)
-        const dbResponse = await fetch(databaseUrl);
-        const dbText = await dbResponse.text();
-        const dbJson = JSON.parse(dbText.substring(47).slice(0, -2));
-        const students = dbJson.table.rows;
+        // Fetch Students from database
+        const studentsResponse = await fetch('API/fetch-student.php');
+        const studentsResult = await studentsResponse.json();
         
-        // Fetch Attendance
-        const attResponse = await fetch(attendanceUrl);
-        const attText = await attResponse.text();
-        const attJson = JSON.parse(attText.substring(47).slice(0, -2));
-        const logs = attJson.table.rows;
+        // Fetch Attendance from database
+        const attendanceResponse = await fetch('API/fetch-attendance.php');
+        const attendanceResult = await attendanceResponse.json();
 
-        // Process Data
-        processAdminData(students, logs);
+        if (studentsResult.success && attendanceResult.success) {
+            const students = studentsResult.data || [];
+            const logs = attendanceResult.data || [];
+            
+            // Process Data
+            processAdminData(students, logs);
+        } else {
+            console.error('API Error:', studentsResult.message || attendanceResult.message);
+            alert('Error loading data from database');
+        }
 
     } catch (error) {
         console.error('Error fetching admin data:', error);
+        alert('Error connecting to database');
     }
 }
 
@@ -180,12 +182,10 @@ function processAdminData(students, logs) {
     animateValue(document.getElementById('totalStudents'), 0, totalStudents, 1000);
 
     // 2. Process Logs & Today's Stats
-    // Use local date to ensure we match the user's timezone, not UTC
     const today = new Date();
     const todayStr = today.toLocaleDateString('en-CA'); // Returns YYYY-MM-DD in local time
     
     const presentSet = new Set();
-    const recentLogs = [];
     const allLogs = [];
 
     // Helper for Title Case
@@ -196,35 +196,29 @@ function processAdminData(students, logs) {
         ).join(' ');
     };
 
-    // Map student Roll to Name/Class for easy lookup
+    // Map student Roll to Name/Class for easy lookup from API data
     const studentMap = {};
-    students.forEach(row => {
-        const roll = row.c[2] ? String(row.c[2].v) : '';
+    students.forEach(student => {
+        const roll = String(student.roll || '');
         if (roll) {
             studentMap[roll] = {
-                name: row.c[1] ? toTitleCase(row.c[1].v) : 'Unknown',
-                class: row.c[3] ? toTitleCase(row.c[3].v) : 'N/A',
-                uid: row.c[0] ? (row.c[0].v || 'N/A') : 'N/A',
-                address: row.c[4] ? toTitleCase(row.c[4].v) : 'N/A'
+                name: toTitleCase(student.name || 'Unknown'),
+                class: toTitleCase(student.class || 'N/A'),
+                uid: student.uid || 'N/A',
+                address: student.address || 'N/A'
             };
         }
     });
     
     globalStudentMap = studentMap;
 
-    // Populate Student Cards
+    // Populate Student Cards from API data
     const studentsGrid = document.getElementById('studentsGrid');
     studentsGrid.innerHTML = '';
-    students.forEach(row => {
-        const roll = row.c[2] ? String(row.c[2].v) : '';
+    students.forEach(student => {
+        const roll = String(student.roll || '');
         if (roll && studentMap[roll]) {
             const s = studentMap[roll];
-            
-            // Get initials for avatar
-            const nameParts = s.name.split(' ');
-            const initials = nameParts.length > 1 
-                ? nameParts[0][0] + nameParts[nameParts.length - 1][0]
-                : nameParts[0][0];
             
             const card = document.createElement('div');
             card.className = 'student-card';
@@ -275,33 +269,22 @@ function processAdminData(students, logs) {
         }
     });
 
-    // Process Logs (Reverse order for latest first)
-    // Logs columns: 0: Date, 1: Time, 4: Roll No
-    for (let i = logs.length - 1; i >= 0; i--) {
-        const row = logs[i];
-        const date = row.c[0] ? row.c[0].f || row.c[0].v : '';
-        const time = row.c[1] ? row.c[1].f || row.c[1].v : '';
-        const roll = row.c[4] ? String(row.c[4].v) : '';
-        
-        if (roll && studentMap[roll]) {
-            const student = studentMap[roll];
-            
-            // Add to All Logs
-            allLogs.push({
-                date: date,
-                time: time,
-                name: student.name,
-                roll: roll,
-                class: student.class,
-                status: 'Present'
-            });
+    // Process Logs from API data (already in reverse chronological order)
+    logs.forEach(log => {
+        allLogs.push({
+            date: log.date,
+            time: log.time,
+            name: log.name,
+            roll: String(log.roll),
+            class: log.class,
+            status: log.status || 'Present'
+        });
 
-            // Check if today
-            if (date === todayStr) {
-                presentSet.add(roll);
-            }
+        // Check if today
+        if (log.date === todayStr) {
+            presentSet.add(String(log.roll));
         }
-    }
+    });
     
     globalLogs = allLogs;
 
@@ -318,8 +301,8 @@ function processAdminData(students, logs) {
     absentStudentsList.innerHTML = '';
     
     const absentStudents = [];
-    students.forEach(row => {
-        const roll = row.c[2] ? String(row.c[2].v) : '';
+    students.forEach(student => {
+        const roll = String(student.roll || '');
         if (roll && studentMap[roll] && !presentSet.has(roll)) {
             absentStudents.push({
                 roll: roll,
@@ -516,11 +499,9 @@ function updateCharts(logs, students) {
         // Calculate stats per class
         const classStats = {};
         
-        // Initialize with total students from global student list
-        // We need to re-parse students because the raw 'students' array passed here 
-        // has columns: 0:UID, 1:Name, 2:Roll, 3:Class, 4:Address
-        students.forEach(row => {
-            const cls = row.c[3] ? (typeof row.c[3].v === 'string' ? row.c[3].v : String(row.c[3].v)) : 'Unknown';
+        // Initialize with total students from API data
+        students.forEach(student => {
+            const cls = student.class || 'Unknown';
             // Normalize class name (Title Case)
             const className = cls.charAt(0).toUpperCase() + cls.slice(1).toLowerCase();
             
