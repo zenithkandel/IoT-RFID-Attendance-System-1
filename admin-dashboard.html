@@ -127,10 +127,18 @@
                 <div class="card">
                     <div class="card-header">
                         <h3><i class="fas fa-list-alt"></i> Full Attendance Logs</h3>
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="logSearch" placeholder="Search logs...">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button id="filterBtn" class="btn-filter">
+                                <i class="fas fa-filter"></i> Filters
+                            </button>
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="logSearch" placeholder="Search logs...">
+                            </div>
                         </div>
+                    </div>
+                    <div id="activeFilters" class="active-filters">
+                        <!-- Filter chips will appear here -->
                     </div>
                     <div class="table-responsive">
                         <table class="table">
