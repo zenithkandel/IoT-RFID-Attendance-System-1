@@ -1003,6 +1003,21 @@ function openEditStudentModal(student) {
     // Show modal
     modal.classList.add('active');
 
+    // Wire close button (×)
+    const modalCloseBtn = modal.querySelector('.modal-close');
+    if (modalCloseBtn) {
+        modalCloseBtn.onclick = () => {
+            modal.classList.remove('active');
+        };
+    }
+
+    // Wire backdrop click
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    };
+
     // Wire cancel/save buttons (idempotent)
     const btnCancel = document.getElementById('cancelEditStudent');
     const btnSave = document.getElementById('saveEditStudent');
