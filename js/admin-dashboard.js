@@ -145,6 +145,7 @@ function initTheme() {
 let globalStudents = [];
 let globalLogs = [];
 let globalStudentMap = {};
+let isAutoRefreshing = false;
 
 // Placeholder for data fetching
 async function fetchAdminData() {
@@ -180,7 +181,13 @@ function processAdminData(students, logs) {
     
     // 1. Total Students
     const totalStudents = students.length;
-    animateValue(document.getElementById('totalStudents'), 0, totalStudents, 1000);
+    
+    // Skip animation if auto-refreshing
+    if (isAutoRefreshing) {
+        document.getElementById('totalStudents').innerHTML = totalStudents;
+    } else {
+        animateValue(document.getElementById('totalStudents'), 0, totalStudents, 1000);
+    }
 
     // 2. Process Logs & Today's Stats
     const today = new Date();
@@ -315,8 +322,14 @@ function processAdminData(students, logs) {
     const absentCount = totalStudents - presentCount;
     const attendanceRate = totalStudents > 0 ? Math.round((presentCount / totalStudents) * 100) : 0;
 
-    animateValue(document.getElementById('presentToday'), 0, presentCount, 1000);
-    animateValue(document.getElementById('absentToday'), 0, absentCount, 1000);
+    // Skip animation if auto-refreshing
+    if (isAutoRefreshing) {
+        document.getElementById('presentToday').innerHTML = presentCount;
+        document.getElementById('absentToday').innerHTML = absentCount;
+    } else {
+        animateValue(document.getElementById('presentToday'), 0, presentCount, 1000);
+        animateValue(document.getElementById('absentToday'), 0, absentCount, 1000);
+    }
 
     // Populate Absent Students List
     const absentStudentsList = document.getElementById('absentStudentsList');
@@ -635,6 +648,10 @@ function animateValue(obj, start, end, duration) {
 function refreshData() {
     const btn = document.querySelector('.btn-sm i');
     btn.classList.add('fa-spin');
+    
+    // Mark as manual refresh
+    isAutoRefreshing = false;
+    
     fetchAdminData().then(() => {
         setTimeout(() => btn.classList.remove('fa-spin'), 500);
     });
@@ -1020,7 +1037,8 @@ function startAutoRefresh() {
     
     // Set new interval (3 seconds)
     autoRefreshInterval = setInterval(() => {
-        refreshData();
+        isAutoRefreshing = true;
+        fetchAdminData();
     }, 3000);
 }
 
