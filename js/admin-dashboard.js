@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDate();
     initSearch();
     initReports();
+    initFilters();
     
     // Mobile Sidebar Toggle
     const mobileToggle = document.querySelector('.mobile-toggle');
@@ -369,20 +370,7 @@ function processAdminData(students, logs) {
     });
 
     // Populate Full Logs Table
-    const fullLogsTableBody = document.getElementById('fullLogsTable');
-    fullLogsTableBody.innerHTML = '';
-    allLogs.forEach(log => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${log.date}</td>
-            <td>${log.time}</td>
-            <td>${log.name}</td>
-            <td>${log.roll}</td>
-            <td>${log.class}</td>
-            <td><span style="color: var(--success); font-weight: 600;">Present</span></td>
-        `;
-        fullLogsTableBody.appendChild(tr);
-    });
+    populateLogsTable(allLogs);
 
     // Generate Charts
     updateCharts(allLogs, students);
@@ -744,4 +732,202 @@ function downloadCSV(data, filename) {
         link.click();
         document.body.removeChild(link);
     }
+}
+
+// Filter System
+let activeFilters = {
+    dateFrom: null,
+    dateTo: null,
+    class: null
+};
+
+function initFilters() {
+    const filterBtn = document.getElementById('filterBtn');
+    const filterModal = document.getElementById('filterModal');
+    const modalClose = document.querySelector('.modal-close');
+    const btnClearFilters = document.getElementById('clearFilters');
+    const btnApplyFilters = document.getElementById('applyFilters');
+    
+    // Open modal
+    if (filterBtn) {
+        filterBtn.addEventListener('click', () => {
+            populateClassDropdown();
+            filterModal.classList.add('active');
+        });
+    }
+    
+    // Close modal
+    if (modalClose) {
+        modalClose.addEventListener('click', () => {
+            filterModal.classList.remove('active');
+        });
+    }
+    
+    // Close on backdrop click
+    if (filterModal) {
+        filterModal.addEventListener('click', (e) => {
+            if (e.target === filterModal) {
+                filterModal.classList.remove('active');
+            }
+        });
+    }
+    
+    // Clear all filters
+    if (btnClearFilters) {
+        btnClearFilters.addEventListener('click', () => {
+            activeFilters = { dateFrom: null, dateTo: null, class: null };
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            document.getElementById('filterClass').value = '';
+            renderFilterChips();
+            applyFilters();
+            filterModal.classList.remove('active');
+        });
+    }
+    
+    // Apply filters
+    if (btnApplyFilters) {
+        btnApplyFilters.addEventListener('click', () => {
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo = document.getElementById('filterDateTo').value;
+            const classValue = document.getElementById('filterClass').value;
+            
+            // Validate date range
+            if (dateFrom && dateTo && dateFrom > dateTo) {
+                alert('Start date cannot be after end date.');
+                return;
+            }
+            
+            activeFilters.dateFrom = dateFrom || null;
+            activeFilters.dateTo = dateTo || null;
+            activeFilters.class = classValue || null;
+            
+            renderFilterChips();
+            applyFilters();
+            filterModal.classList.remove('active');
+        });
+    }
+}
+
+function populateClassDropdown() {
+    const classDropdown = document.getElementById('filterClass');
+    if (!classDropdown) return;
+    
+    // Get unique classes from students
+    const classes = new Set();
+    for (const roll in globalStudentMap) {
+        const studentClass = globalStudentMap[roll].class;
+        if (studentClass) {
+            classes.add(studentClass);
+        }
+    }
+    
+    // Clear existing options except the first one
+    classDropdown.innerHTML = '<option value="">All Classes</option>';
+    
+    // Add class options sorted
+    Array.from(classes).sort().forEach(cls => {
+        const option = document.createElement('option');
+        option.value = cls;
+        option.textContent = cls;
+        classDropdown.appendChild(option);
+    });
+    
+    // Set current value if filter is active
+    if (activeFilters.class) {
+        classDropdown.value = activeFilters.class;
+    }
+}
+
+function renderFilterChips() {
+    const activeFiltersContainer = document.getElementById('activeFilters');
+    if (!activeFiltersContainer) return;
+    
+    activeFiltersContainer.innerHTML = '';
+    
+    // Date range chip
+    if (activeFilters.dateFrom || activeFilters.dateTo) {
+        const chip = document.createElement('div');
+        chip.className = 'filter-chip';
+        
+        let dateText = '<i class="fas fa-calendar"></i> ';
+        if (activeFilters.dateFrom && activeFilters.dateTo) {
+            dateText += `${activeFilters.dateFrom} to ${activeFilters.dateTo}`;
+        } else if (activeFilters.dateFrom) {
+            dateText += `From ${activeFilters.dateFrom}`;
+        } else {
+            dateText += `Until ${activeFilters.dateTo}`;
+        }
+        
+        chip.innerHTML = `${dateText} <button class="filter-chip-remove" onclick="removeFilter('date')"><i class="fas fa-times"></i></button>`;
+        activeFiltersContainer.appendChild(chip);
+    }
+    
+    // Class chip
+    if (activeFilters.class) {
+        const chip = document.createElement('div');
+        chip.className = 'filter-chip';
+        chip.innerHTML = `<i class="fas fa-graduation-cap"></i> Class: ${activeFilters.class} <button class="filter-chip-remove" onclick="removeFilter('class')"><i class="fas fa-times"></i></button>`;
+        activeFiltersContainer.appendChild(chip);
+    }
+}
+
+function removeFilter(filterType) {
+    if (filterType === 'date') {
+        activeFilters.dateFrom = null;
+        activeFilters.dateTo = null;
+        document.getElementById('filterDateFrom').value = '';
+        document.getElementById('filterDateTo').value = '';
+    } else if (filterType === 'class') {
+        activeFilters.class = null;
+        document.getElementById('filterClass').value = '';
+    }
+    
+    renderFilterChips();
+    applyFilters();
+}
+
+function applyFilters() {
+    let filteredLogs = [...globalLogs];
+    
+    // Filter by date range
+    if (activeFilters.dateFrom) {
+        filteredLogs = filteredLogs.filter(log => log.date >= activeFilters.dateFrom);
+    }
+    if (activeFilters.dateTo) {
+        filteredLogs = filteredLogs.filter(log => log.date <= activeFilters.dateTo);
+    }
+    
+    // Filter by class
+    if (activeFilters.class) {
+        filteredLogs = filteredLogs.filter(log => log.class === activeFilters.class);
+    }
+    
+    // Update the logs table with filtered data
+    populateLogsTable(filteredLogs);
+}
+
+function populateLogsTable(logs) {
+    const tbody = document.getElementById('fullLogsTable');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (logs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">No records found</td></tr>';
+        return;
+    }
+    
+    logs.forEach(log => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${log.date}</td>
+            <td>${log.time}</td>
+            <td>${log.name}</td>
+            <td>${log.roll}</td>
+            <td>${log.class}</td>
+            <td><span style="color: var(--success); font-weight: 600;">${log.status}</span></td>
+        `;
+        tbody.appendChild(row);
+    });
 }
