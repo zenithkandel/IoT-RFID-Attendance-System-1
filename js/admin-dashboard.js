@@ -196,22 +196,57 @@ function processAdminData(students, logs) {
     
     globalStudentMap = studentMap;
 
-    // Populate Student Table
-    const studentsTableBody = document.getElementById('studentsTable');
-    studentsTableBody.innerHTML = '';
+    // Populate Student Cards
+    const studentsGrid = document.getElementById('studentsGrid');
+    studentsGrid.innerHTML = '';
     students.forEach(row => {
         const roll = row.c[2] ? String(row.c[2].v) : '';
         if (roll && studentMap[roll]) {
             const s = studentMap[roll];
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${s.uid}</td>
-                <td>${s.name}</td>
-                <td>${roll}</td>
-                <td>${s.class}</td>
-                <td>${s.address}</td>
+            
+            // Get initials for avatar
+            const nameParts = s.name.split(' ');
+            const initials = nameParts.length > 1 
+                ? nameParts[0][0] + nameParts[nameParts.length - 1][0]
+                : nameParts[0][0];
+            
+            const card = document.createElement('div');
+            card.className = 'student-card';
+            card.innerHTML = `
+                <div class="student-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="student-info">
+                    <div class="student-name">${s.name}</div>
+                    <div class="student-details">
+                        <div class="student-detail-item student-uid">
+                            <span class="student-detail-label">
+                                <i class="fas fa-fingerprint"></i> UID
+                            </span>
+                            <span class="student-detail-value">${s.uid}</span>
+                        </div>
+                        <div class="student-detail-item">
+                            <span class="student-detail-label">
+                                <i class="fas fa-id-card"></i> Roll
+                            </span>
+                            <span class="student-detail-value">${roll}</span>
+                        </div>
+                        <div class="student-detail-item">
+                            <span class="student-detail-label">
+                                <i class="fas fa-layer-group"></i> Class
+                            </span>
+                            <span class="student-detail-value">${s.class}</span>
+                        </div>
+                        <div class="student-detail-item">
+                            <span class="student-detail-label">
+                                <i class="fas fa-map-marker-alt"></i> Address
+                            </span>
+                            <span class="student-detail-value">${s.address}</span>
+                        </div>
+                    </div>
+                </div>
             `;
-            studentsTableBody.appendChild(tr);
+            studentsGrid.appendChild(card);
         }
     });
 
