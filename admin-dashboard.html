@@ -90,7 +90,16 @@
                     <div class="card recent-activity">
                         <div class="card-header">
                             <h3><span class="live-indicator"></span> Recent Activity</h3>
-                            <button class="btn-sm" onclick="refreshData()"><i class="fas fa-sync-alt"></i></button>
+                            <div class="header-actions">
+                                <div class="auto-refresh-toggle">
+                                    <label class="toggle-label">
+                                        <span class="toggle-text">Auto Refresh</span>
+                                        <input type="checkbox" id="autoRefreshToggle" class="toggle-checkbox">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <button class="btn-sm" onclick="refreshData()"><i class="fas fa-sync-alt"></i></button>
+                            </div>
                         </div>
                         <div class="table-responsive">
                             <table class="table">

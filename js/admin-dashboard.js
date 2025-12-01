@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSearch();
     initReports();
     initFilters();
+    initAutoRefresh();
     
     // Mobile Sidebar Toggle
     const mobileToggle = document.querySelector('.mobile-toggle');
