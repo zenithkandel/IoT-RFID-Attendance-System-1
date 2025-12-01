@@ -37,8 +37,17 @@ ADMINISTRATOR (Admin Panel)
     - Present vs Absent ratio (pie charts)
     - Attendance heatmaps
   ✓ Filter by date range, class, student
-  ✓ Export reports (future enhancement)
+  ✓ Export reports (CSV, Excel)
   ✓ View real-time attendance feed
+  ✓ Direct database management:
+    - Add/Edit/Delete student records
+    - Modify attendance entries
+    - Update student information (Name, Roll, Class, Address)
+    - Manage student passwords
+    - Bulk import/export operations
+  ✓ User management:
+    - Create/manage admin accounts
+    - View login history and activity logs
 
 STUDENT (Student Portal)
 ────────────────────────
@@ -70,6 +79,9 @@ STUDENT (Student Portal)
   ✦ Audio-Visual Feedback (Buzzer + LED + LCD)
   ✦ Secure Password Authentication
   ✦ Session Management & Last Login Tracking
+  ✦ Full CRUD Operations via Admin Panel
+  ✦ Direct Database Editing & Management
+  ✦ Bulk Operations (Import/Export/Update)
 
 ================================================================================
                         PURPOSE & USE CASES
