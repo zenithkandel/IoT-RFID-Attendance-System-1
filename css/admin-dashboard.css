@@ -567,11 +567,11 @@ body {
 .student-card:hover {
     transform: translateY(-2px);
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(91, 123, 233, 0.06);
 }
 
 [data-theme="light"] .student-card:hover {
-    background: rgba(0, 0, 0, 0.02);
+    background: rgba(91, 123, 233, 0.08);
 }
 
 .student-avatar {

@@ -1,12 +1,26 @@
 // Student Dashboard Logic
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Check session
-    if (sessionStorage.getItem('isLoggedIn') !== 'true' || sessionStorage.getItem('userRole') !== 'student') {
+    // Check if admin is viewing student profile
+    const isAdminViewing = sessionStorage.getItem('viewingAsAdmin') === 'true';
+    const viewingStudentId = sessionStorage.getItem('viewingStudentId');
+    
+    // Check session - allow admin or student access
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+    const userRole = sessionStorage.getItem('userRole');
+    
+    if (!isLoggedIn) {
         window.location.href = 'login.html';
+        return;
+    }
+    
+    if (!isAdminViewing && userRole !== 'student') {
+        window.location.href = 'login.html';
+        return;
     }
 
-    const studentRoll = sessionStorage.getItem('studentId');
+    // Determine which student to display
+    const studentRoll = isAdminViewing ? viewingStudentId : sessionStorage.getItem('studentId');
     const studentRollElement = document.getElementById('studentRoll');
     const currentDateElement = document.getElementById('currentDate');
 
@@ -16,6 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (currentDateElement) {
         currentDateElement.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // Update navbar for admin viewing
+    if (isAdminViewing) {
+        updateNavbarForAdmin();
     }
 
     // Initialize Calendar
@@ -40,9 +59,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+function updateNavbarForAdmin() {
+    const navbar = document.querySelector('.navbar .container');
+    const logoBadge = document.querySelector('.logo .badge');
+    
+    if (logoBadge) {
+        logoBadge.textContent = 'Admin View';
+        logoBadge.style.background = 'linear-gradient(135deg, #5B7BE9, #4A6BD8)';
+    }
+    
+    // Add back button
+    const navLinks = document.querySelector('.nav-links');
+    if (navLinks && !document.getElementById('backToAdmin')) {
+        const backButton = document.createElement('li');
+        backButton.innerHTML = `<a href="#" id="backToAdmin"><i class="fas fa-arrow-left"></i> Back to Admin</a>`;
+        navLinks.insertBefore(backButton, navLinks.firstChild);
+        
+        document.getElementById('backToAdmin').addEventListener('click', (e) => {
+            e.preventDefault();
+            sessionStorage.removeItem('viewingStudentId');
+            sessionStorage.removeItem('viewingAsAdmin');
+            window.location.href = 'admin-dashboard.html';
+        });
+    }
+}
+
 function logout() {
-    sessionStorage.clear();
-    window.location.href = 'index.html';
+    const isAdminViewing = sessionStorage.getItem('viewingAsAdmin') === 'true';
+    
+    if (isAdminViewing) {
+        // If admin is viewing, go back to admin dashboard
+        sessionStorage.removeItem('viewingStudentId');
+        sessionStorage.removeItem('viewingAsAdmin');
+        window.location.href = 'admin-dashboard.html';
+    } else {
+        // Regular student logout
+        sessionStorage.clear();
+        window.location.href = 'index.html';
+    }
 }
 
 function initTheme() {

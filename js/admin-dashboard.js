@@ -227,6 +227,7 @@ function processAdminData(students, logs) {
             
             const card = document.createElement('div');
             card.className = 'student-card';
+            card.style.cursor = 'pointer';
             card.innerHTML = `
                 <div class="student-avatar">
                     <i class="fas fa-user-graduate"></i>
@@ -261,6 +262,14 @@ function processAdminData(students, logs) {
                     </div>
                 </div>
             `;
+            
+            // Add click event to redirect to student dashboard
+            card.addEventListener('click', () => {
+                sessionStorage.setItem('viewingStudentId', roll);
+                sessionStorage.setItem('viewingAsAdmin', 'true');
+                window.location.href = 'student-dashboard.html';
+            });
+            
             studentsGrid.appendChild(card);
         }
     });
