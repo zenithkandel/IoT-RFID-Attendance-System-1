@@ -17,11 +17,12 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <WiFiManager.h>               // Easy WiFi configuration
+#include <ESP8266HTTPClient.h>         // HTTP client for API calls
+#include <WiFiClient.h>                // WiFi client for HTTP
 #include <SPI.h>
 #include <MFRC522.h>                   // RFID library
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>         // I2C LCD
-#include <HTTPSRedirect.h>             // TLS + redirect helper for Google Scripts
 
 // ---------- HARDWARE / SETTINGS ----------
 LiquidCrystal_I2C lcd(0x27, 16, 2);    // LCD address 0x27, 16 cols x 2 rows
@@ -34,13 +35,13 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);    // LCD address 0x27, 16 cols x 2 rows
 #define BUTTON_PIN 0                  // D3 (GPIO0) - WiFi config / reset button
 #define WIFI_LED  LED_BUILTIN         // On-board LED (active LOW on many boards)
 
-// Google Script deployment ID (change this to your deployment ID)
-const char *GScriptId = "YOUR_DEVELOPMENT_ID";
-const char* host        = "script.google.com";
-const int   httpsPort   = 443;
-String url = String("/macros/s/") + GScriptId + "/exec";
+// PHP API endpoint configuration (change to your server IP/domain)
+const char* serverIP = "192.168.1.100";  // Change to your computer's IP address
+const int serverPort = 80;
+const char* apiEndpoint = "/API/rfid-checkin.php";
 
-HTTPSRedirect* client = nullptr;
+WiFiClient wifiClient;
+HTTPClient http;
 
 // Timing & control
 const unsigned long COOLDOWN_DELAY = 1500; // ms between allowed scans
@@ -76,6 +77,11 @@ String getLocalISOTime() {
           tm_local.tm_year + 1900, tm_local.tm_mon + 1, tm_local.tm_mday,
           tm_local.tm_hour, tm_local.tm_min, tm_local.tm_sec);
   return String(buf);
+}
+
+// Build full API URL
+String getAPIUrl() {
+  return String("http://") + serverIP + ":" + String(serverPort) + apiEndpoint;
 }
 
 // ---------- SETUP ----------
@@ -122,24 +128,18 @@ void setup() {
     delay(1000);
   }
 
-  // Prepare HTTPSRedirect client object (we will re-create if needed)
-  client = new HTTPSRedirect(httpsPort);
-  client->setInsecure();
-  client->setPrintResponseBody(true);
-  client->setContentTypeHeader("application/json");
-
-  // Quick test to Google host (not mandatory)
-  lcd.clear(); lcd.setCursor(0,0); lcd.print("Checking Google");
-  if (client->connect(host, httpsPort)) {
-    lcd.setCursor(0,1); lcd.print("Google OK");
+  // Test connection to PHP API server
+  lcd.clear(); lcd.setCursor(0,0); lcd.print("Checking Server");
+  http.begin(wifiClient, getAPIUrl());
+  int httpCode = http.GET();
+  if (httpCode > 0) {
+    lcd.setCursor(0,1); lcd.print("Server OK");
     delay(900);
   } else {
-    lcd.setCursor(0,1); lcd.print("Google Fail");
+    lcd.setCursor(0,1); lcd.print("Server Fail");
     delay(900);
   }
-  client->flush();
-  delete client;
-  client = nullptr;
+  http.end();
 
   // System ready
   digitalWrite(WIFI_LED, LOW); // ON (active low)
@@ -149,16 +149,6 @@ void setup() {
 
 // ---------- MAIN LOOP ----------
 void loop() {
-  // Lazily create client and keep it available
-  static bool clientReady = false;
-  if (!clientReady) {
-    client = new HTTPSRedirect(httpsPort);
-    client->setInsecure();
-    client->setPrintResponseBody(true);
-    client->setContentTypeHeader("application/json");
-    clientReady = true;
-  }
-  if (client && !client->connected()) client->connect(host, httpsPort);
 
   // Check long-press for WiFi config portal
   if (digitalRead(BUTTON_PIN) == LOW) {
@@ -203,34 +193,46 @@ void loop() {
   uidString.toUpperCase();
   Serial.println("UID => " + uidString);
 
-  // Build JSON payload: send uid and ISO timestamp (Nepal local)
-  String payload = String("{\"uid\":\"") + uidString + String("\",\"timestamp\":\"") + getLocalISOTime() + String("\"}");
+  // Build JSON payload: send only UID (PHP handles timestamp)
+  String payload = String("{\"uid\":\"") + uidString + String("\"}");
 
   // UI: Sending
   lcd.clear(); lcd.setCursor(0,0); lcd.print("Sending UID...");
   Serial.println("Payload: " + payload);
+  Serial.println("URL: " + getAPIUrl());
 
-  // POST with HTTPSRedirect (returns boolean)
+  // POST to PHP API
   bool ok = false;
-  if (client) {
-    // client->POST(url, host, payload) returns true on success in many HTTPSRedirect versions
-    // we'll call POST and trust response; the library prints response body to Serial when enabled
-    if (client->POST(url, host, payload)) {
+  http.begin(wifiClient, getAPIUrl());
+  http.addHeader("Content-Type", "application/json");
+  
+  int httpCode = http.POST(payload);
+  
+  if (httpCode > 0) {
+    String response = http.getString();
+    Serial.println("HTTP Code: " + String(httpCode));
+    Serial.println("Response: " + response);
+    
+    // Check if request was successful
+    if (httpCode == 200 && response.indexOf("\"success\":true") > 0) {
       ok = true;
-    } else {
-      ok = false;
     }
+  } else {
+    Serial.println("HTTP Error: " + http.errorToString(httpCode));
   }
+  
+  http.end();
 
   // Feedback on result
   if (ok) {
-    lcd.clear(); lcd.setCursor(0,0); lcd.print("UID:");
+    lcd.clear(); lcd.setCursor(0,0); lcd.print("Success!");
     lcd.setCursor(0,1); lcd.print(uidString);
     tone(BUZZER, 1200, 150); delay(160);
     tone(BUZZER, 1200, 150); delay(160);
     digitalWrite(LED, HIGH); delay(120); digitalWrite(LED, LOW);
   } else {
-    lcd.clear(); lcd.setCursor(0,0); lcd.print("Send Failed");
+    lcd.clear(); lcd.setCursor(0,0); lcd.print("Failed!");
+    lcd.setCursor(0,1); lcd.print("Try Again");
     tone(BUZZER, 600, 200); delay(220);
   }
 
