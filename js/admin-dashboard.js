@@ -269,19 +269,20 @@ function processAdminData(students, logs) {
         }
     });
 
-    // Process Logs from API data (already in reverse chronological order)
+    // Process Logs from API data (now includes checkIn/checkOut times)
     logs.forEach(log => {
         allLogs.push({
             date: log.date,
-            time: log.time,
+            checkIn: log.checkIn || '-',
+            checkOut: log.checkOut || '-',
             name: log.name,
             roll: String(log.roll),
             class: log.class,
             status: log.status || 'Present'
         });
 
-        // Check if today
-        if (log.date === todayStr) {
+        // Check if today and has checked in
+        if (log.date === todayStr && log.checkIn) {
             presentSet.add(String(log.roll));
         }
     });
@@ -343,11 +344,14 @@ function processAdminData(students, logs) {
     recentTableBody.innerHTML = '';
     allLogs.slice(0, 5).forEach(log => {
         const tr = document.createElement('tr');
+        const timeDisplay = log.checkOut && log.checkOut !== '-' 
+            ? `${log.checkIn} - ${log.checkOut}` 
+            : log.checkIn;
         tr.innerHTML = `
-            <td>${log.time}</td>
+            <td>${timeDisplay}</td>
             <td>${log.name}</td>
             <td>${log.roll}</td>
-            <td><span style="color: var(--success); font-weight: 600;">Present</span></td>
+            <td><span style="color: var(--success); font-weight: 600;">${log.status}</span></td>
         `;
         recentTableBody.appendChild(tr);
     });
@@ -895,7 +899,7 @@ function populateLogsTable(logs) {
     tbody.innerHTML = '';
     
     if (logs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">No records found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: var(--text-light);">No records found</td></tr>';
         return;
     }
     
@@ -903,7 +907,8 @@ function populateLogsTable(logs) {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${log.date}</td>
-            <td>${log.time}</td>
+            <td>${log.checkIn || '-'}</td>
+            <td>${log.checkOut || '-'}</td>
             <td>${log.name}</td>
             <td>${log.roll}</td>
             <td>${log.class}</td>

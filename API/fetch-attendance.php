@@ -23,17 +23,41 @@ try {
     
     if ($result) {
         $attendance = [];
+        $grouped = []; // Group by date and UID for check-in/check-out pairing
         
         while ($row = $result->fetch_assoc()) {
+            $key = $row['Date'] . '_' . $row['UID'];
+            
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'date' => $row['Date'],
+                    'uid' => $row['UID'],
+                    'name' => $row['Name'] ?? 'Unknown',
+                    'roll' => $row['Roll'] ?? 'N/A',
+                    'class' => $row['Class'] ?? 'N/A',
+                    'checkIn' => null,
+                    'checkOut' => null
+                ];
+            }
+            
+            if ($row['Type'] === 'IN') {
+                $grouped[$key]['checkIn'] = $row['Time'];
+            } else if ($row['Type'] === 'OUT') {
+                $grouped[$key]['checkOut'] = $row['Time'];
+            }
+        }
+        
+        // Convert grouped data to attendance records
+        foreach ($grouped as $record) {
             $attendance[] = [
-                'id' => $row['ID'],
-                'date' => $row['Date'],
-                'time' => $row['Time'],
-                'status' => $row['Type'],
-                'uid' => $row['UID'],
-                'name' => $row['Name'] ?? 'Unknown',
-                'roll' => $row['Roll'] ?? 'N/A',
-                'class' => $row['Class'] ?? 'N/A'
+                'date' => $record['date'],
+                'checkIn' => $record['checkIn'],
+                'checkOut' => $record['checkOut'],
+                'status' => $record['checkIn'] ? 'Present' : 'Absent',
+                'uid' => $record['uid'],
+                'name' => $record['name'],
+                'roll' => $record['roll'],
+                'class' => $record['class']
             ];
         }
         
