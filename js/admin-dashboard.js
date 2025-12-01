@@ -558,12 +558,12 @@ function initSearch() {
     if (studentSearch) {
         studentSearch.addEventListener('input', (e) => {
             const searchTerm = e.target.value.toLowerCase();
-            const tableBody = document.getElementById('studentsTable');
-            const rows = tableBody.getElementsByTagName('tr');
+            const studentsGrid = document.getElementById('studentsGrid');
+            const cards = studentsGrid.getElementsByClassName('student-card');
 
-            Array.from(rows).forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            Array.from(cards).forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(searchTerm) ? '' : 'none';
             });
         });
     }
