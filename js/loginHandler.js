@@ -88,12 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.style.opacity = '1';
                 btn.disabled = false;
 
-                // Map internal error messages to user-friendly messages
-                const code = (error && error.message) ? error.message.toLowerCase() : 'something went wrong';
+                // Display error message
                 let message = 'Something went wrong';
-                if (code.includes('user not found')) message = 'User not found';
-                else if (code.includes('wrong password')) message = 'Wrong password';
-                else if (code.includes('something went wrong') || code.includes('failed') || code.includes('connect')) message = 'Something went wrong';
+                if (error.message) {
+                    const code = error.message.toLowerCase();
+                    if (code.includes('invalid username') || code.includes('password')) {
+                        message = 'Invalid username or password';
+                    } else if (code.includes('network') || code.includes('fetch')) {
+                        message = 'Connection error. Please check your internet.';
+                    } else {
+                        message = error.message;
+                    }
+                }
 
                 errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
                 errorDiv.classList.add('visible');
