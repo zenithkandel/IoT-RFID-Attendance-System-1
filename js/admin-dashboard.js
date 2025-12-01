@@ -256,13 +256,33 @@ function processAdminData(students, logs) {
                         </div>
                     </div>
                 </div>
+                <div class="student-actions">
+                    <button class="btn-edit-student" data-id="${student.id}" data-uid="${s.uid}" data-roll="${roll}" data-name="${s.name}" data-class="${s.class}" data-address="${s.address}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </div>
             `;
             
             // Add click event to redirect to student dashboard
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
+                // prevent redirect when clicking edit button
+                if (e.target.closest('.btn-edit-student')) return;
                 sessionStorage.setItem('viewingStudentId', roll);
                 sessionStorage.setItem('viewingAsAdmin', 'true');
                 window.location.href = 'student-dashboard.html';
+            });
+            
+            // Wire edit button
+            const editBtn = card.querySelector('.btn-edit-student');
+            editBtn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                const id = editBtn.getAttribute('data-id');
+                const uid = editBtn.getAttribute('data-uid');
+                const name = editBtn.getAttribute('data-name');
+                const rollVal = editBtn.getAttribute('data-roll');
+                const classVal = editBtn.getAttribute('data-class');
+                const addressVal = editBtn.getAttribute('data-address');
+                openEditStudentModal({ id, uid, name, roll: rollVal, class: classVal, address: addressVal });
             });
             
             studentsGrid.appendChild(card);
