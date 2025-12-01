@@ -35,6 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update navbar for admin viewing
     if (isAdminViewing) {
         updateNavbarForAdmin();
+        // Show admin calendar hint
+        const adminHint = document.getElementById('adminCalendarHint');
+        if (adminHint) {
+            adminHint.style.display = 'block';
+        }
     }
 
     // Initialize Calendar
@@ -146,6 +151,7 @@ function initTheme() {
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 let attendanceData = new Set(); // Stores dates like "2025-10-08"
+let currentStudentUID = null; // Store student UID for admin marking
 
 async function initCalendar(studentRoll) {
     await fetchAttendanceData(studentRoll);
@@ -228,26 +234,8 @@ async function fetchAttendanceData(studentRoll) {
             });
         }
         
-        // Update "You are marked PRESENT today" status
-        const todayStr = new Date().toISOString().split('T')[0];
-        const statusHeader = document.querySelector('.attendance-card h3');
-        const statusText = document.getElementById('todayStatusText');
-        const statusCard = document.querySelector('.attendance-card');
-        
-        if (attendanceData.has(todayStr)) {
-            statusHeader.innerHTML = '<i class="fas fa-check-circle"></i> Today\'s Status';
-            statusText.textContent = 'Marked PRESENT';
-            statusCard.style.borderColor = 'var(--success)';
-            statusCard.style.color = 'var(--success)';
-            statusCard.style.background = 'rgba(52, 211, 153, 0.1)';
-            triggerConfetti();
-        } else {
-            statusHeader.innerHTML = '<i class="fas fa-times-circle"></i> Today\'s Status';
-            statusText.textContent = 'Not Marked Yet';
-            statusCard.style.borderColor = 'var(--danger)';
-            statusCard.style.color = 'var(--danger)';
-            statusCard.style.background = 'rgba(239, 68, 68, 0.1)';
-        }
+        // Update today's status
+        updateTodayStatus();
 
     } catch (error) {
         console.error('Error fetching attendance:', error);
@@ -257,6 +245,7 @@ async function fetchAttendanceData(studentRoll) {
 function renderCalendar(month, year) {
     const calendarGrid = document.getElementById('calendarGrid');
     const monthYearHeader = document.getElementById('calendarMonthYear');
+    const isAdminViewing = sessionStorage.getItem('viewingAsAdmin') === 'true';
     
     // Clear existing days (keep headers)
     const headers = calendarGrid.querySelectorAll('.calendar-day-header');
@@ -288,8 +277,6 @@ function renderCalendar(month, year) {
         dateDiv.className = 'calendar-day';
         dateDiv.textContent = day;
         
-        // Format date string to match Google Sheet format (YYYY-MM-DD)
-        // Note: Month is 0-indexed in JS, so +1. Pad with 0.
         const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const checkDate = new Date(year, month, day);
         
@@ -299,50 +286,27 @@ function renderCalendar(month, year) {
         }
         
         // Check status
-        if (attendanceData.has(dateString)) {
+        const isPresent = attendanceData.has(dateString);
+        if (isPresent) {
             dateDiv.classList.add('present');
             dateDiv.title = "Present";
         } else {
-            // Mark absent only if date is in the past (and not a weekend, optionally)
-            // For simplicity, just check if it's in the past
             if (checkDate < today && checkDate.setHours(0,0,0,0) !== today.setHours(0,0,0,0)) {
                 dateDiv.classList.add('absent');
                 dateDiv.title = "Absent";
             }
         }
         
-        dateDiv.style.animationDelay = `${day * 0.03}s`; // Staggered animation
+        // Add click handler for admin
+        if (isAdminViewing) {
+            dateDiv.style.cursor = 'pointer';
+            dateDiv.addEventListener('click', async () => {
+                await toggleAttendance(dateString, isPresent);
+            });
+        }
+        
+        dateDiv.style.animationDelay = `${day * 0.03}s`;
         calendarGrid.appendChild(dateDiv);
-    }
-}
-
-function triggerConfetti() {
-    const container = document.getElementById('confetti-container');
-    if (!container) return;
-
-    const colors = ['#34d399', '#60a5fa', '#f472b6', '#fbbf24'];
-    
-    for (let i = 0; i < 50; i++) {
-        const confetti = document.createElement('div');
-        confetti.classList.add('confetti');
-        
-        // Random properties
-        const bg = colors[Math.floor(Math.random() * colors.length)];
-        const left = Math.random() * 100 + 'vw';
-        const animDuration = Math.random() * 3 + 2 + 's';
-        const animDelay = Math.random() * 2 + 's';
-        
-        confetti.style.backgroundColor = bg;
-        confetti.style.left = left;
-        confetti.style.animationDuration = animDuration;
-        confetti.style.animationDelay = animDelay;
-        
-        container.appendChild(confetti);
-        
-        // Remove after animation
-        setTimeout(() => {
-            confetti.remove();
-        }, 5000);
     }
 }
 
@@ -353,6 +317,9 @@ async function fetchStudentDetails(studentRoll) {
         
         if (result.success && result.data) {
             const student = result.data;
+            
+            // Store UID globally for admin marking
+            currentStudentUID = student.uid;
             
             // Helper to fix capitalization (Title Case)
             const toTitleCase = (str) => {
@@ -380,5 +347,79 @@ async function fetchStudentDetails(studentRoll) {
     } catch (error) {
         console.error('Error fetching student details:', error);
         document.getElementById('studentName').textContent = 'Welcome, Student';
+    }
+}
+
+async function toggleAttendance(dateString, isCurrentlyPresent) {
+    if (!currentStudentUID) {
+        alert('Student UID not available');
+        return;
+    }
+    
+    const action = isCurrentlyPresent ? 'unmark' : 'mark';
+    const confirmMsg = isCurrentlyPresent 
+        ? `Remove attendance for ${dateString}?` 
+        : `Mark present for ${dateString}?`;
+    
+    if (!confirm(confirmMsg)) return;
+    
+    try {
+        const response = await fetch('API/mark-attendance.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uid: currentStudentUID,
+                date: dateString,
+                action: action
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Update attendance data set
+            if (action === 'mark') {
+                attendanceData.add(dateString);
+            } else {
+                attendanceData.delete(dateString);
+            }
+            
+            // Re-render calendar
+            renderCalendar(currentMonth, currentYear);
+            
+            // Update today's status if marking for today
+            const todayStr = new Date().toISOString().split('T')[0];
+            if (dateString === todayStr) {
+                updateTodayStatus();
+            }
+        } else {
+            alert(result.message || 'Failed to update attendance');
+        }
+    } catch (error) {
+        console.error('Error toggling attendance:', error);
+        alert('Error updating attendance');
+    }
+}
+
+function updateTodayStatus() {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const statusHeader = document.querySelector('.attendance-card h3');
+    const statusText = document.getElementById('todayStatusText');
+    const statusCard = document.querySelector('.attendance-card');
+    
+    if (attendanceData.has(todayStr)) {
+        statusHeader.innerHTML = '<i class="fas fa-check-circle"></i> Today\'s Status';
+        statusText.textContent = 'Marked PRESENT';
+        statusCard.style.borderColor = 'var(--success)';
+        statusCard.style.color = 'var(--success)';
+        statusCard.style.background = 'rgba(52, 211, 153, 0.1)';
+    } else {
+        statusHeader.innerHTML = '<i class="fas fa-times-circle"></i> Today\'s Status';
+        statusText.textContent = 'Not Marked Yet';
+        statusCard.style.borderColor = 'var(--danger)';
+        statusCard.style.color = 'var(--danger)';
+        statusCard.style.background = 'rgba(239, 68, 68, 0.1)';
     }
 }

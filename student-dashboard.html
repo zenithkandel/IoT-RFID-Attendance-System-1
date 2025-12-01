@@ -30,9 +30,6 @@
     </nav>
 
     <div class="dashboard-container">
-        <!-- Confetti Container -->
-        <div id="confetti-container"></div>
-
         <!-- Left Column: Profile & Status -->
         <div class="dashboard-left-col">
             <div class="student-profile">
@@ -83,6 +80,10 @@
                         <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
                         <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
                     </div>
+                </div>
+                
+                <div id="adminCalendarHint" style="display: none; padding: 10px; margin-bottom: 10px; background: rgba(91, 123, 233, 0.1); border: 1px solid rgba(91, 123, 233, 0.3); border-radius: 8px; font-size: 0.85rem; color: var(--primary-color);">
+                    <i class="fas fa-info-circle"></i> <strong>Admin Mode:</strong> Click on any date to mark/unmark attendance
                 </div>
                 
                 <div class="calendar-grid" id="calendarGrid">

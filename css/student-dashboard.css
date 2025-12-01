@@ -224,6 +224,22 @@ body {
     display: none;
 }
 
+/* Admin clickable calendar days */
+.calendar-day[style*="cursor: pointer"]:hover {
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(91, 123, 233, 0.3);
+    border-color: var(--primary-color);
+}
+
+.calendar-day[style*="cursor: pointer"].present:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.calendar-day[style*="cursor: pointer"].absent:hover,
+.calendar-day[style*="cursor: pointer"]:not(.present):not(.absent):hover {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
 .calendar-legend {
     margin-top: 15px;
     font-size: 0.8rem;
