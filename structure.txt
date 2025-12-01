@@ -93,6 +93,49 @@ STUDENT (Student Portal)
    - Real-world problem solving
 
 ================================================================================
+                     DATABASE ARCHITECTURE
+================================================================================
+
+DATABASE: edutrack (MySQL/MariaDB)
+Backend: XAMPP Server (PHP + MySQL)
+
+TABLE 1: students
+─────────────────
+  • ID (INT, Primary Key, Auto Increment) - Unique student identifier
+  • UID (TEXT) - RFID card unique identifier
+  • Name (TEXT) - Student full name
+  • Roll (INT) - Roll number (used for login)
+  • Class (TEXT) - Student's class/grade
+  • Address (INT) - Student address
+  • password (TEXT) - Hashed password for student login
+  • last_login (TEXT) - Last login timestamp
+
+TABLE 2: attendance
+───────────────────
+  • ID (INT, Primary Key, Auto Increment) - Unique attendance record ID
+  • Time (INT) - Attendance timestamp (Unix time)
+  • UID (INT) - Reference to student UID
+  • Date (TEXT) - Attendance date (formatted)
+  • Type (INT) - Attendance type (0=Absent, 1=Present, etc.)
+
+TABLE 3: users
+──────────────
+  • ID (INT, Primary Key, Auto Increment) - Unique admin user ID
+  • username (TEXT) - Admin username
+  • password (TEXT) - Hashed password
+  • last_login (TEXT) - Last login timestamp
+
+MIGRATION STATUS:
+─────────────────
+  ☑ Database schema created (edutrack.sql)
+  ☐ PHP API endpoints for CRUD operations
+  ☐ Update frontend to use MySQL backend
+  ☐ ESP8266 firmware update for MySQL integration
+  ☐ Password hashing implementation (bcrypt/SHA-256)
+  ☐ Session management with PHP
+  ☐ Data migration from Google Sheets
+
+================================================================================
                         FUTURE ENHANCEMENTS
 ================================================================================
 
@@ -105,6 +148,9 @@ STUDENT (Student Portal)
   □ PDF report generation
   □ Multi-school support
   □ API for third-party integrations
+  □ Advanced analytics with machine learning
+  □ Backup and restore functionality
+  □ Audit logs for security
 
 ================================================================================
                         CONTACT & CREDITS
