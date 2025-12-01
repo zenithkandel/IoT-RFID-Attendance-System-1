@@ -986,6 +986,51 @@ function populateLogsTable(logs) {
     });
 }
 
+// Auto Refresh Functionality
+let autoRefreshInterval = null;
+
+function initAutoRefresh() {
+    const toggle = document.getElementById('autoRefreshToggle');
+    if (!toggle) return;
+    
+    // Load saved state
+    const savedState = localStorage.getItem('autoRefresh');
+    if (savedState === 'true') {
+        toggle.checked = true;
+        startAutoRefresh();
+    }
+    
+    // Handle toggle change
+    toggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            startAutoRefresh();
+            localStorage.setItem('autoRefresh', 'true');
+        } else {
+            stopAutoRefresh();
+            localStorage.setItem('autoRefresh', 'false');
+        }
+    });
+}
+
+function startAutoRefresh() {
+    // Clear any existing interval
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    // Set new interval (3 seconds)
+    autoRefreshInterval = setInterval(() => {
+        refreshData();
+    }, 3000);
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
 // Edit Student Modal ------------------------------------------------------
 function openEditStudentModal(student) {
     // student: { id, uid, name, roll, class, address }
