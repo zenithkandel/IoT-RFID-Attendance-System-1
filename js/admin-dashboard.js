@@ -984,3 +984,88 @@ function populateLogsTable(logs) {
         tbody.appendChild(row);
     });
 }
+
+// Edit Student Modal ------------------------------------------------------
+function openEditStudentModal(student) {
+    // student: { id, uid, name, roll, class, address }
+    const modal = document.getElementById('editStudentModal');
+    if (!modal) return;
+
+    // Populate fields
+    document.getElementById('editStudentId').value = student.id || '';
+    document.getElementById('editUID').value = student.uid || '';
+    document.getElementById('editName').value = student.name || '';
+    document.getElementById('editRoll').value = student.roll || '';
+    document.getElementById('editClass').value = student.class || '';
+    document.getElementById('editAddress').value = student.address || '';
+    document.getElementById('editPassword').value = '';
+
+    // Show modal
+    modal.classList.add('active');
+
+    // Wire cancel/save buttons (idempotent)
+    const btnCancel = document.getElementById('cancelEditStudent');
+    const btnSave = document.getElementById('saveEditStudent');
+
+    if (btnCancel) {
+        btnCancel.onclick = (e) => {
+            e.preventDefault();
+            modal.classList.remove('active');
+        };
+    }
+
+    if (btnSave) {
+        btnSave.onclick = async (e) => {
+            e.preventDefault();
+            await submitEditStudentForm();
+        };
+    }
+}
+
+async function submitEditStudentForm() {
+    const modal = document.getElementById('editStudentModal');
+    if (!modal) return;
+
+    const id = document.getElementById('editStudentId').value;
+    const uid = document.getElementById('editUID').value.trim();
+    const name = document.getElementById('editName').value.trim();
+    const roll = document.getElementById('editRoll').value.trim();
+    const classVal = document.getElementById('editClass').value.trim();
+    const address = document.getElementById('editAddress').value.trim();
+    const password = document.getElementById('editPassword').value;
+
+    if (!id) {
+        alert('Missing student identifier');
+        return;
+    }
+
+    // Basic validation
+    if (!uid || !name || !roll) {
+        alert('Please provide UID, Name and Roll number');
+        return;
+    }
+
+    const payload = { id: id, uid: uid, name: name, roll: roll, class: classVal, address: address };
+    if (password && password.length > 0) payload.password = password;
+
+    try {
+        const resp = await fetch('API/update-student.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await resp.json();
+        if (result.success) {
+            // Close modal and refresh data
+            modal.classList.remove('active');
+            await fetchAdminData();
+            alert('Student updated successfully');
+        } else {
+            alert(result.message || 'Failed to update student');
+        }
+    } catch (err) {
+        console.error('Error updating student:', err);
+        alert('Error updating student');
+    }
+}
