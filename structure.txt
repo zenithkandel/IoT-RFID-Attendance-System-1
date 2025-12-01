@@ -58,7 +58,7 @@ STUDENT (Student Portal)
 ================================================================================
 
   ✦ Real-time Attendance Tracking
-  ✦ Cloud-based Data Storage (Google Sheets)
+  ✦ Dual Backend Support (Google Sheets + MySQL Database)
   ✦ No Internet Required for Scanning (queues offline, syncs later)
   ✦ Beautiful, Responsive Web Dashboard
   ✦ Role-based Access (Admin/Student)
@@ -68,6 +68,8 @@ STUDENT (Student Portal)
   ✦ Mobile-friendly Interface
   ✦ Wi-Fi Configuration via Hotspot
   ✦ Audio-Visual Feedback (Buzzer + LED + LCD)
+  ✦ Secure Password Authentication
+  ✦ Session Management & Last Login Tracking
 
 ================================================================================
                         PURPOSE & USE CASES
