@@ -302,8 +302,48 @@ function processAdminData(students, logs) {
 
     animateValue(document.getElementById('presentToday'), 0, presentCount, 1000);
     animateValue(document.getElementById('absentToday'), 0, absentCount, 1000);
-    document.getElementById('attendanceRate').textContent = `${attendanceRate}%`;
-    document.getElementById('attendanceRateBar').style.width = `${attendanceRate}%`;
+
+    // Populate Absent Students List
+    const absentStudentsList = document.getElementById('absentStudentsList');
+    absentStudentsList.innerHTML = '';
+    
+    const absentStudents = [];
+    students.forEach(row => {
+        const roll = row.c[2] ? String(row.c[2].v) : '';
+        if (roll && studentMap[roll] && !presentSet.has(roll)) {
+            absentStudents.push({
+                roll: roll,
+                ...studentMap[roll]
+            });
+        }
+    });
+
+    if (absentStudents.length === 0) {
+        absentStudentsList.innerHTML = `
+            <div class="no-absences">
+                <i class="fas fa-check-circle"></i>
+                <p><strong>Perfect Attendance!</strong><br>All students are present today.</p>
+            </div>
+        `;
+    } else {
+        absentStudents.forEach(student => {
+            const div = document.createElement('div');
+            div.className = 'absent-student-item';
+            div.innerHTML = `
+                <div class="absent-student-avatar">
+                    <i class="fas fa-user-slash"></i>
+                </div>
+                <div class="absent-student-info">
+                    <div class="absent-student-name">${student.name}</div>
+                    <div class="absent-student-details">
+                        <span><i class="fas fa-id-card"></i> ${student.roll}</span>
+                        <span><i class="fas fa-layer-group"></i> ${student.class}</span>
+                    </div>
+                </div>
+            `;
+            absentStudentsList.appendChild(div);
+        });
+    }
 
     // Populate Recent Activity (Top 5)
     const recentTableBody = document.getElementById('recentActivityTable');
