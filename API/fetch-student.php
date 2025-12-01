@@ -19,24 +19,36 @@ try {
         if ($result && $result->num_rows > 0) {
             $student = $result->fetch_assoc();
             
-            // Fetch student's attendance records
+            // Fetch student's attendance records and group by date
             $attendanceSql = "SELECT Date, Time, Type 
                             FROM attendance 
                             WHERE UID = '{$student['UID']}' 
                             ORDER BY Date DESC, Time DESC";
             
             $attendanceResult = $conn->query($attendanceSql);
-            $attendance = [];
+            $attendanceGrouped = [];
             
             if ($attendanceResult) {
                 while ($row = $attendanceResult->fetch_assoc()) {
-                    $attendance[] = [
-                        'date' => $row['Date'],
-                        'time' => $row['Time'],
-                        'status' => $row['Type']
-                    ];
+                    $date = $row['Date'];
+                    
+                    if (!isset($attendanceGrouped[$date])) {
+                        $attendanceGrouped[$date] = [
+                            'date' => $date,
+                            'checkIn' => null,
+                            'checkOut' => null
+                        ];
+                    }
+                    
+                    if ($row['Type'] === 'IN') {
+                        $attendanceGrouped[$date]['checkIn'] = $row['Time'];
+                    } else if ($row['Type'] === 'OUT') {
+                        $attendanceGrouped[$date]['checkOut'] = $row['Time'];
+                    }
                 }
             }
+            
+            $attendance = array_values($attendanceGrouped);
             
             echo json_encode([
                 'success' => true,

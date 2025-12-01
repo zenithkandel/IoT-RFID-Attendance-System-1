@@ -619,10 +619,11 @@ function initReports() {
                 return;
             }
 
-            const headers = ['Date', 'Time', 'Name', 'Roll No', 'Class', 'Status'];
+            const headers = ['Date', 'Check In', 'Check Out', 'Name', 'Roll No', 'Class', 'Status'];
             const data = dailyLogs.map(log => [
                 log.date,
-                log.time,
+                log.checkIn || '-',
+                log.checkOut || '-',
                 log.name,
                 log.roll,
                 log.class,
@@ -651,10 +652,11 @@ function initReports() {
                 return;
             }
 
-            const headers = ['Date', 'Time', 'Name', 'Roll No', 'Class', 'Status'];
+            const headers = ['Date', 'Check In', 'Check Out', 'Name', 'Roll No', 'Class', 'Status'];
             const data = monthlyLogs.map(log => [
                 log.date,
-                log.time,
+                log.checkIn || '-',
+                log.checkOut || '-',
                 log.name,
                 log.roll,
                 log.class,

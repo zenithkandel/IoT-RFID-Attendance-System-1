@@ -220,9 +220,9 @@ async function fetchAttendanceData(studentRoll) {
         if (result.success && result.data) {
             const attendance = result.data.attendance || [];
             
-            // Add all attendance dates to the Set
+            // Add all attendance dates to the Set (only if checked in)
             attendance.forEach(record => {
-                if (record.date) {
+                if (record.date && record.checkIn) {
                     attendanceData.add(record.date);
                 }
             });
