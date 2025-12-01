@@ -59,33 +59,48 @@ function initNavigation() {
     const sections = document.querySelectorAll('.section');
     const pageTitle = document.getElementById('pageTitle');
 
+    // Restore saved tab or default to dashboard
+    const savedTab = localStorage.getItem('adminActiveTab') || 'dashboard';
+    activateTab(savedTab);
+
     menuItems.forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
             
-            // Remove active class from all items
-            menuItems.forEach(i => i.classList.remove('active'));
-            
-            // Add active class to clicked item
-            item.classList.add('active');
-            
             // Get target section
             const targetId = item.getAttribute('data-target');
             
-            // Update Page Title
-            const titleText = item.querySelector('span').textContent;
-            pageTitle.textContent = titleText;
+            // Save to localStorage
+            localStorage.setItem('adminActiveTab', targetId);
             
-            // Show target section, hide others
-            sections.forEach(section => {
-                if (section.id === targetId) {
-                    section.classList.add('active');
-                } else {
-                    section.classList.remove('active');
-                }
-            });
+            // Activate the tab
+            activateTab(targetId);
         });
     });
+
+    function activateTab(targetId) {
+        // Remove active class from all items
+        menuItems.forEach(i => i.classList.remove('active'));
+        
+        // Add active class to target item
+        const targetItem = document.querySelector(`.sidebar-menu li[data-target="${targetId}"]`);
+        if (targetItem) {
+            targetItem.classList.add('active');
+            
+            // Update Page Title
+            const titleText = targetItem.querySelector('span').textContent;
+            pageTitle.textContent = titleText;
+        }
+        
+        // Show target section, hide others
+        sections.forEach(section => {
+            if (section.id === targetId) {
+                section.classList.add('active');
+            } else {
+                section.classList.remove('active');
+            }
+        });
+    }
 }
 
 function initTheme() {
