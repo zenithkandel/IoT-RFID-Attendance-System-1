@@ -213,30 +213,20 @@ async function initCalendar(studentRoll) {
 }
 
 async function fetchAttendanceData(studentRoll) {
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1S7L_hKo5LJW6bOPKvxLMkXVSiP4V1CH5rfX6xYqAhBE/gviz/tq?sheet=attendance&tqx=out:json';
-    
     try {
-        const response = await fetch(sheetUrl);
-        const text = await response.text();
-        const jsonString = text.substring(47).slice(0, -2);
-        const json = JSON.parse(jsonString);
+        const response = await fetch(`API/fetch-student.php?roll=${studentRoll}`);
+        const result = await response.json();
         
-        const rows = json.table.rows;
-        
-        // Column indices based on fetch.txt analysis
-        // 0: Date, 4: Roll No
-        
-        rows.forEach(row => {
-            const rollCell = row.c[4];
-            const dateCell = row.c[0];
+        if (result.success && result.data) {
+            const attendance = result.data.attendance || [];
             
-            if (rollCell && String(rollCell.v) === String(studentRoll)) {
-                if (dateCell && dateCell.f) {
-                    // dateCell.f is "2025-10-08"
-                    attendanceData.add(dateCell.f);
+            // Add all attendance dates to the Set
+            attendance.forEach(record => {
+                if (record.date) {
+                    attendanceData.add(record.date);
                 }
-            }
-        });
+            });
+        }
         
         // Update "You are marked PRESENT today" status
         const todayStr = new Date().toISOString().split('T')[0];
@@ -357,62 +347,38 @@ function triggerConfetti() {
 }
 
 async function fetchStudentDetails(studentRoll) {
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1S7L_hKo5LJW6bOPKvxLMkXVSiP4V1CH5rfX6xYqAhBE/gviz/tq?sheet=database&tqx=out:json';
-
     try {
-        const response = await fetch(sheetUrl);
-        const text = await response.text();
-        const jsonString = text.substring(47).slice(0, -2);
-        const json = JSON.parse(jsonString);
+        const response = await fetch(`API/fetch-student.php?roll=${studentRoll}`);
+        const result = await response.json();
         
-        const rows = json.table.rows;
-        
-        // Database Sheet Columns:
-        // 0: UID, 1: Name, 2: Roll No, 3: Class, 4: Address
-        
-        let studentFound = false;
-
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            const rollCell = row.c[2]; // Column C is Roll No
+        if (result.success && result.data) {
+            const student = result.data;
             
-            // Check if roll number matches (handle both number and string types)
-            if (rollCell && (String(rollCell.v) === String(studentRoll) || rollCell.f === String(studentRoll))) {
-                studentFound = true;
-                
-                const uid = row.c[0] ? (row.c[0].v || 'N/A') : 'N/A';
-                let name = row.c[1] ? (row.c[1].v || 'Student') : 'Student';
-                let className = row.c[3] ? (row.c[3].v || 'N/A') : 'N/A';
-                let address = row.c[4] ? (row.c[4].v || 'N/A') : 'N/A';
-                
-                // Helper to fix capitalization (Title Case)
-                const toTitleCase = (str) => {
-                    if (typeof str !== 'string') return String(str);
-                    return str.toLowerCase().split(' ').map(word => 
-                        word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' ');
-                };
+            // Helper to fix capitalization (Title Case)
+            const toTitleCase = (str) => {
+                if (typeof str !== 'string') return String(str);
+                return str.toLowerCase().split(' ').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1)
+                ).join(' ');
+            };
 
-                name = toTitleCase(name);
-                className = toTitleCase(className);
-                address = toTitleCase(address);
-                
-                // Update DOM
-                document.getElementById('studentName').textContent = `Welcome, ${name}`;
-                document.getElementById('studentClass').textContent = className;
-                document.getElementById('studentUID').textContent = uid;
-                document.getElementById('studentAddress').textContent = address;
-                
-                break;
-            }
-        }
-
-        if (!studentFound) {
+            const name = toTitleCase(student.name || 'Student');
+            const className = toTitleCase(student.class || 'N/A');
+            const address = student.address || 'N/A';
+            const uid = student.uid || 'N/A';
+            
+            // Update DOM
+            document.getElementById('studentName').textContent = `Welcome, ${name}`;
+            document.getElementById('studentClass').textContent = className;
+            document.getElementById('studentUID').textContent = uid;
+            document.getElementById('studentAddress').textContent = address;
+        } else {
             console.warn('Student details not found for roll:', studentRoll);
             document.getElementById('studentName').textContent = 'Welcome, Student';
         }
 
     } catch (error) {
         console.error('Error fetching student details:', error);
+        document.getElementById('studentName').textContent = 'Welcome, Student';
     }
 }
