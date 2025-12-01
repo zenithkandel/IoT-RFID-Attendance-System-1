@@ -65,7 +65,10 @@ function updateNavbarForAdmin() {
     
     if (logoBadge) {
         logoBadge.textContent = 'Admin View';
-        logoBadge.style.background = 'linear-gradient(135deg, #5B7BE9, #4A6BD8)';
+        logoBadge.style.background = '#5B7BE9';
+        logoBadge.style.color = '#ffffff';
+        logoBadge.style.border = '1px solid rgba(91, 123, 233, 0.3)';
+        logoBadge.style.fontWeight = '600';
     }
     
     // Add back button
