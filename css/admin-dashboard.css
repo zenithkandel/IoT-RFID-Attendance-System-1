@@ -496,6 +496,37 @@ body {
     color: #EF4444;
 }
 
+/* Mark Present Button */
+.btn-mark-present {
+    margin-left: 12px;
+    background: #10B981;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+}
+
+.btn-mark-present i { font-size: 0.9rem; }
+
+.btn-mark-present:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16,185,129,0.12);
+}
+
+.btn-mark-present:active {
+    transform: translateY(0);
+}
+
+.absent-student-item .btn-mark-present {
+    margin-left: 10px;
+}
+
 .no-absences {
     text-align: center;
     padding: 30px 20px;

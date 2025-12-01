@@ -334,7 +334,18 @@ function processAdminData(students, logs) {
                         <span><i class="fas fa-layer-group"></i> ${student.class}</span>
                     </div>
                 </div>
+                <button class="btn-mark-present" data-uid="${student.uid}" data-roll="${student.roll}" data-name="${student.name}">
+                    <i class="fas fa-check"></i> Mark Present
+                </button>
             `;
+            
+            // Add click handler for mark present button
+            const markBtn = div.querySelector('.btn-mark-present');
+            markBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                await markStudentPresent(student.uid, student.roll, student.name);
+            });
+            
             absentStudentsList.appendChild(div);
         });
     }
@@ -361,6 +372,40 @@ function processAdminData(students, logs) {
 
     // Generate Charts
     updateCharts(allLogs, students);
+}
+
+async function markStudentPresent(uid, roll, name) {
+    if (!confirm(`Mark ${name} (${roll}) as present for today?`)) {
+        return;
+    }
+    
+    const todayStr = new Date().toLocaleDateString('en-CA');
+    
+    try {
+        const response = await fetch('API/mark-attendance.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                uid: uid,
+                date: todayStr,
+                action: 'mark'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Refresh the dashboard data
+            await fetchAdminData();
+        } else {
+            alert(result.message || 'Failed to mark attendance');
+        }
+    } catch (error) {
+        console.error('Error marking attendance:', error);
+        alert('Error marking attendance');
+    }
 }
 
 function updateCharts(logs, students) {
