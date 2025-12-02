@@ -67,10 +67,25 @@
             background: white;
         }
 
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select option {
+            padding: 10px;
         }
 
         .button-group {
@@ -244,8 +259,15 @@
         </div>
 
         <div class="input-group">
-            <label for="uidInput">📇 Card UID:</label>
-            <input type="text" id="uidInput" value="54:83:DE:A4" placeholder="Enter UID (e.g., 54:83:DE:A4)">
+            <label for="studentSelect">👤 Select Student:</label>
+            <select id="studentSelect" style="width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; background: white; cursor: pointer; transition: all 0.3s;">
+                <option value="">Loading students...</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="uidInput">📇 Or Enter UID Manually:</label>
+            <input type="text" id="uidInput" placeholder="Enter UID (e.g., 54:83:DE:A4)">
         </div>
 
         <div class="input-group">
@@ -271,12 +293,61 @@
         let totalRequests = 0;
         let successCount = 0;
         let failedCount = 0;
+        let students = [];
 
         function updateStats() {
             document.getElementById('totalRequests').textContent = totalRequests;
             document.getElementById('successCount').textContent = successCount;
             document.getElementById('failedCount').textContent = failedCount;
         }
+
+        // Fetch students from database
+        async function loadStudents() {
+            try {
+                const response = await fetch('API/fetch-student.php');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    students = result.data;
+                    populateStudentDropdown();
+                    log('✅ Loaded ' + students.length + ' students from database', 'success');
+                } else {
+                    log('⚠️  Could not load students: ' + (result.message || 'Unknown error'), 'warning');
+                    document.getElementById('studentSelect').innerHTML = '<option value="">No students found</option>';
+                }
+            } catch (error) {
+                log('❌ Error loading students: ' + error.message, 'error');
+                document.getElementById('studentSelect').innerHTML = '<option value="">Error loading students</option>';
+            }
+        }
+
+        function populateStudentDropdown() {
+            const select = document.getElementById('studentSelect');
+            select.innerHTML = '<option value="">-- Select a student --</option>';
+            
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.uid;
+                option.textContent = `${student.name} (Roll: ${student.roll}) - ${student.uid}`;
+                select.appendChild(option);
+            });
+        }
+
+        // Update UID input when dropdown changes
+        document.addEventListener('DOMContentLoaded', function() {
+            const select = document.getElementById('studentSelect');
+            const uidInput = document.getElementById('uidInput');
+            
+            select.addEventListener('change', function() {
+                if (this.value) {
+                    uidInput.value = this.value;
+                    const student = students.find(s => s.uid === this.value);
+                    if (student) {
+                        log(`📝 Selected: ${student.name} (${student.uid})`, 'info');
+                    }
+                }
+            });
+        });
 
         function log(message, type = 'info') {
             const timestamp = new Date().toLocaleTimeString();
