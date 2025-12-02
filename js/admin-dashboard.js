@@ -1163,7 +1163,44 @@ function initManageUsers() {
         btnAddStudent.addEventListener('click', openAddStudentModal);
     }
     
+    // Initialize search functionality
+    const searchInput = document.getElementById('manageUsersSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            filterManageUsers(e.target.value);
+        });
+    }
+    
     populateManageUsersTable();
+}
+
+function filterManageUsers(searchTerm) {
+    const grid = document.getElementById('manageUsersGrid');
+    if (!grid) return;
+
+    const cards = grid.querySelectorAll('.student-card');
+    const normalizedSearch = searchTerm.toLowerCase().trim();
+
+    cards.forEach(card => {
+        if (!normalizedSearch) {
+            card.style.display = 'flex';
+            return;
+        }
+
+        const name = card.querySelector('.student-name').textContent.toLowerCase();
+        const uid = card.querySelector('.student-uid .student-detail-value').textContent.toLowerCase();
+        const roll = card.querySelectorAll('.student-detail-value')[1].textContent.toLowerCase();
+        const className = card.querySelectorAll('.student-detail-value')[2].textContent.toLowerCase();
+        const address = card.querySelectorAll('.student-detail-value')[3].textContent.toLowerCase();
+
+        const matches = name.includes(normalizedSearch) ||
+                        uid.includes(normalizedSearch) ||
+                        roll.includes(normalizedSearch) ||
+                        className.includes(normalizedSearch) ||
+                        address.includes(normalizedSearch);
+
+        card.style.display = matches ? 'flex' : 'none';
+    });
 }
 
 function openAddStudentModal() {
