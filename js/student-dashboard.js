@@ -151,6 +151,7 @@ function initTheme() {
 let currentMonth = new Date().getMonth();
 let currentYear = new Date().getFullYear();
 let attendanceData = new Set(); // Stores dates like "2025-10-08"
+let attendanceRecords = {}; // Stores {"2025-10-08": {checkIn: "08:00:00", checkOut: "15:00:00"}}
 let currentStudentUID = null; // Store student UID for admin marking
 
 async function initCalendar(studentRoll) {
@@ -198,7 +199,10 @@ async function initCalendar(studentRoll) {
             });
 
             if (attendanceData.has(selectedDate)) {
-                dateResult.innerHTML = `<i class="fas fa-check-circle"></i> <strong>Present</strong> on ${formattedDate}`;
+                const times = attendanceRecords[selectedDate];
+                const checkInTime = times?.checkIn || 'N/A';
+                const checkOutTime = times?.checkOut || 'Not checked out';
+                dateResult.innerHTML = `<i class="fas fa-check-circle"></i> <strong>Present</strong> on ${formattedDate}<br><small style="font-size: 0.85em; opacity: 0.9;">Check-in: ${checkInTime} | Check-out: ${checkOutTime}</small>`;
                 dateResult.className = 'date-result present';
             } else {
                 // Check if date is in future
@@ -226,10 +230,14 @@ async function fetchAttendanceData(studentRoll) {
         if (result.success && result.data) {
             const attendance = result.data.attendance || [];
             
-            // Add all attendance dates to the Set (only if checked in)
+            // Store attendance dates and times
             attendance.forEach(record => {
                 if (record.date && record.checkIn) {
                     attendanceData.add(record.date);
+                    attendanceRecords[record.date] = {
+                        checkIn: record.checkIn,
+                        checkOut: record.checkOut || null
+                    };
                 }
             });
         }
@@ -410,8 +418,12 @@ function updateTodayStatus() {
     const statusCard = document.querySelector('.attendance-card');
     
     if (attendanceData.has(todayStr)) {
+        const times = attendanceRecords[todayStr];
+        const checkInTime = times?.checkIn || 'N/A';
+        const checkOutTime = times?.checkOut || 'Not yet';
+        
         statusHeader.innerHTML = '<i class="fas fa-check-circle"></i> Today\'s Status';
-        statusText.textContent = 'Marked PRESENT';
+        statusText.innerHTML = `Marked PRESENT<br><small style="font-size: 0.85em; opacity: 0.9; margin-top: 5px; display: block;">In: ${checkInTime} | Out: ${checkOutTime}</small>`;
         statusCard.style.borderColor = 'var(--success)';
         statusCard.style.color = 'var(--success)';
         statusCard.style.background = 'rgba(52, 211, 153, 0.1)';
