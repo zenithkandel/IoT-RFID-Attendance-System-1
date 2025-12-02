@@ -1257,6 +1257,9 @@ function populateManageUsersTable() {
                 </div>
             </div>
             <div class="student-actions">
+                <button class="btn-view-student" data-roll="${student.roll}" style="background: var(--primary-color); border-color: var(--primary-color);">
+                    <i class="fas fa-eye"></i> View
+                </button>
                 <button class="btn-edit-student" data-id="${student.id}" data-uid="${student.uid}" data-roll="${student.roll}" data-name="${student.name}" data-class="${student.class}" data-address="${student.address}">
                     <i class="fas fa-edit"></i> Edit
                 </button>
@@ -1265,6 +1268,16 @@ function populateManageUsersTable() {
                 </button>
             </div>
         `;
+        
+        // Wire view button
+        const viewBtn = card.querySelector('.btn-view-student');
+        viewBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const roll = viewBtn.getAttribute('data-roll');
+            sessionStorage.setItem('viewingStudentId', roll);
+            sessionStorage.setItem('viewingAsAdmin', 'true');
+            window.location.href = 'student-dashboard.html';
+        });
         
         // Wire edit button
         const editBtn = card.querySelector('.btn-edit-student');
