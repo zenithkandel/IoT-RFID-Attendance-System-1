@@ -1264,34 +1264,85 @@ async function submitAddStudentForm() {
 }
 
 function populateManageUsersTable() {
-    const tbody = document.getElementById('manageUsersTable');
-    if (!tbody) return;
+    const grid = document.getElementById('manageUsersGrid');
+    if (!grid) return;
 
-    tbody.innerHTML = '';
+    grid.innerHTML = '';
 
     if (globalStudents.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">No students found</td></tr>';
+        grid.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-light); grid-column: 1 / -1;">No students found</div>';
         return;
     }
 
     globalStudents.forEach(student => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${student.uid}</td>
-            <td>${student.name}</td>
-            <td>${student.roll}</td>
-            <td>${student.class}</td>
-            <td>${student.address || 'N/A'}</td>
-            <td>
-                <button class="btn-sm" onclick="editUserFromManage('${student.id}', '${student.uid}', '${student.name}', '${student.roll}', '${student.class}', '${student.address}')" style="background: var(--primary-color); color: white; margin-right: 5px;">
-                    <i class="fas fa-edit"></i>
+        const card = document.createElement('div');
+        card.className = 'student-card';
+        card.innerHTML = `
+            <div class="student-avatar">
+                <i class="fas fa-user-graduate"></i>
+            </div>
+            <div class="student-info">
+                <div class="student-name">${student.name}</div>
+                <div class="student-details">
+                    <div class="student-detail-item student-uid">
+                        <span class="student-detail-label">
+                            <i class="fas fa-fingerprint"></i> UID
+                        </span>
+                        <span class="student-detail-value">${student.uid}</span>
+                    </div>
+                    <div class="student-detail-item">
+                        <span class="student-detail-label">
+                            <i class="fas fa-id-card"></i> Roll
+                        </span>
+                        <span class="student-detail-value">${student.roll}</span>
+                    </div>
+                    <div class="student-detail-item">
+                        <span class="student-detail-label">
+                            <i class="fas fa-layer-group"></i> Class
+                        </span>
+                        <span class="student-detail-value">${student.class}</span>
+                    </div>
+                    <div class="student-detail-item">
+                        <span class="student-detail-label">
+                            <i class="fas fa-map-marker-alt"></i> Address
+                        </span>
+                        <span class="student-detail-value">${student.address || 'N/A'}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="student-actions">
+                <button class="btn-edit-student" data-id="${student.id}" data-uid="${student.uid}" data-roll="${student.roll}" data-name="${student.name}" data-class="${student.class}" data-address="${student.address}">
+                    <i class="fas fa-edit"></i> Edit
                 </button>
-                <button class="btn-sm" onclick="deleteUser('${student.id}', '${student.name}')" style="background: var(--danger); color: white;">
-                    <i class="fas fa-trash"></i>
+                <button class="btn-delete-student" data-id="${student.id}" data-name="${student.name}" style="background: var(--danger); border-color: var(--danger);">
+                    <i class="fas fa-trash"></i> Delete
                 </button>
-            </td>
+            </div>
         `;
-        tbody.appendChild(row);
+        
+        // Wire edit button
+        const editBtn = card.querySelector('.btn-edit-student');
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = editBtn.getAttribute('data-id');
+            const uid = editBtn.getAttribute('data-uid');
+            const name = editBtn.getAttribute('data-name');
+            const rollVal = editBtn.getAttribute('data-roll');
+            const classVal = editBtn.getAttribute('data-class');
+            const addressVal = editBtn.getAttribute('data-address');
+            openEditStudentModal({ id, uid, name, roll: rollVal, class: classVal, address: addressVal });
+        });
+        
+        // Wire delete button
+        const deleteBtn = card.querySelector('.btn-delete-student');
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = deleteBtn.getAttribute('data-id');
+            const name = deleteBtn.getAttribute('data-name');
+            deleteUser(id, name);
+        });
+        
+        grid.appendChild(card);
     });
 }
 
