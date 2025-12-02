@@ -10,10 +10,13 @@ $conn = new mysqli($host, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
-    die(json_encode([
+    header('Content-Type: application/json');
+    http_response_code(500);
+    echo json_encode([
         'success' => false,
         'message' => 'Database connection failed: ' . $conn->connect_error
-    ]));
+    ]);
+    exit;
 }
 
 // Set charset to utf8mb4 for proper character encoding
