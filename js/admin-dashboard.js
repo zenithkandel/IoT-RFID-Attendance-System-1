@@ -1258,7 +1258,7 @@ function populateManageUsersTable() {
             </div>
             <div class="student-actions">
                 <button class="btn-view-student" data-roll="${student.roll}" style="background: var(--primary-color); border-color: var(--primary-color);">
-                    <i class="fas fa-eye"></i> View
+                    <i class="fas fa-cog"></i> Dashboard
                 </button>
                 <button class="btn-edit-student" data-id="${student.id}" data-uid="${student.uid}" data-roll="${student.roll}" data-name="${student.name}" data-class="${student.class}" data-address="${student.address}">
                     <i class="fas fa-edit"></i> Edit
