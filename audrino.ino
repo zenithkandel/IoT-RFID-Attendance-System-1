@@ -43,7 +43,7 @@ const char* apiEndpoint = "/API/rfid-checkin.php";
 WiFiClient wifiClient;
 HTTPClient http;
 
-// Timing & control
+// Timing & controla
 const unsigned long COOLDOWN_DELAY = 1500; // ms between allowed scans
 unsigned long lastScanTime = 0;
 unsigned long pressStart = 0;
