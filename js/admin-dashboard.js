@@ -226,83 +226,6 @@ function processAdminData(students, logs) {
     
     globalStudentMap = studentMap;
 
-    // Populate Student Cards from API data
-    const studentsGrid = document.getElementById('studentsGrid');
-    studentsGrid.innerHTML = '';
-    students.forEach(student => {
-        const roll = String(student.roll || '');
-        if (roll && studentMap[roll]) {
-            const s = studentMap[roll];
-            
-            const card = document.createElement('div');
-            card.className = 'student-card';
-            card.style.cursor = 'pointer';
-            card.innerHTML = `
-                <div class="student-avatar">
-                    <i class="fas fa-user-graduate"></i>
-                </div>
-                <div class="student-info">
-                    <div class="student-name">${s.name}</div>
-                    <div class="student-details">
-                        <div class="student-detail-item student-uid">
-                            <span class="student-detail-label">
-                                <i class="fas fa-fingerprint"></i> UID
-                            </span>
-                            <span class="student-detail-value">${s.uid}</span>
-                        </div>
-                        <div class="student-detail-item">
-                            <span class="student-detail-label">
-                                <i class="fas fa-id-card"></i> Roll
-                            </span>
-                            <span class="student-detail-value">${roll}</span>
-                        </div>
-                        <div class="student-detail-item">
-                            <span class="student-detail-label">
-                                <i class="fas fa-layer-group"></i> Class
-                            </span>
-                            <span class="student-detail-value">${s.class}</span>
-                        </div>
-                        <div class="student-detail-item">
-                            <span class="student-detail-label">
-                                <i class="fas fa-map-marker-alt"></i> Address
-                            </span>
-                            <span class="student-detail-value">${s.address}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="student-actions">
-                    <button class="btn-edit-student" data-id="${student.id}" data-uid="${s.uid}" data-roll="${roll}" data-name="${s.name}" data-class="${s.class}" data-address="${s.address}">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                </div>
-            `;
-            
-            // Add click event to redirect to student dashboard
-            card.addEventListener('click', (e) => {
-                // prevent redirect when clicking edit button
-                if (e.target.closest('.btn-edit-student')) return;
-                sessionStorage.setItem('viewingStudentId', roll);
-                sessionStorage.setItem('viewingAsAdmin', 'true');
-                window.location.href = 'student-dashboard.html';
-            });
-            
-            // Wire edit button
-            const editBtn = card.querySelector('.btn-edit-student');
-            editBtn.addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                const id = editBtn.getAttribute('data-id');
-                const uid = editBtn.getAttribute('data-uid');
-                const name = editBtn.getAttribute('data-name');
-                const rollVal = editBtn.getAttribute('data-roll');
-                const classVal = editBtn.getAttribute('data-class');
-                const addressVal = editBtn.getAttribute('data-address');
-                openEditStudentModal({ id, uid, name, roll: rollVal, class: classVal, address: addressVal });
-            });
-            
-            studentsGrid.appendChild(card);
-        }
-    });
-
     // Process Logs from API data (now includes checkIn/checkOut times)
     logs.forEach(log => {
         allLogs.push({
@@ -679,20 +602,6 @@ function initSearch() {
         });
     }
 
-    // Student Search
-    const studentSearch = document.getElementById('studentSearch');
-    if (studentSearch) {
-        studentSearch.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const studentsGrid = document.getElementById('studentsGrid');
-            const cards = studentsGrid.getElementsByClassName('student-card');
-
-            Array.from(cards).forEach(card => {
-                const text = card.textContent.toLowerCase();
-                card.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        });
-    }
 }
 
 function initReports() {
