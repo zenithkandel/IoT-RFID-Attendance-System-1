@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFID Card Tap Simulator - EduTrack Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 150px;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-clear {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 200px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #output::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #output::-webkit-scrollbar-track {
+            background: #2d2d2d;
+            border-radius: 10px;
+        }
+
+        #output::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        .warning { color: #fbbf24; }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-ready { background: #4ade80; }
+        .status-sending { background: #fbbf24; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔖 RFID Card Tap Simulator</h1>
+        <p class="subtitle">Test your EduTrack Pro attendance system without hardware</p>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalRequests">0</div>
+                <div class="stat-label">Total Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="successCount">0</div>
+                <div class="stat-label">Successful</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="failedCount">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="uidInput">📇 Card UID:</label>
+            <input type="text" id="uidInput" value="54:83:DE:A4" placeholder="Enter UID (e.g., 54:83:DE:A4)">
+        </div>
+
+        <div class="input-group">
+            <label for="apiInput">🌐 API Endpoint:</label>
+            <input type="text" id="apiInput" value="http://localhost/projects/iot/IoT-RFID-Attendance-System-/API/rfid-checkin.php">
+        </div>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="simulateTap()">📡 Tap Card</button>
+            <button class="btn-secondary" onclick="testFlow()">🔄 Test Full Flow</button>
+            <button class="btn-clear" onclick="clearOutput()">🗑️ Clear Log</button>
+        </div>
+
+        <label>
+            <span class="status-indicator status-ready"></span>
+            Console Output:
+        </label>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+        let totalRequests = 0;
+        let successCount = 0;
+        let failedCount = 0;
+
+        function updateStats() {
+            document.getElementById('totalRequests').textContent = totalRequests;
+            document.getElementById('successCount').textContent = successCount;
+            document.getElementById('failedCount').textContent = failedCount;
+        }
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : 
+                            type === 'error' ? 'error' : 
+                            type === 'warning' ? 'warning' : 'info';
+            output.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            output.innerHTML = '';
+            totalRequests = 0;
+            successCount = 0;
+            failedCount = 0;
+            updateStats();
+            log('✅ Console cleared - Ready for testing!', 'success');
+        }
+
+        function simulateTap() {
+            const uid = document.getElementById('uidInput').value.trim();
+            const apiURL = document.getElementById('apiInput').value.trim();
+
+            if (!uid) {
+                log('❌ ERROR: Please enter a UID', 'error');
+                return;
+            }
+
+            totalRequests++;
+            updateStats();
+
+            log(`📤 SENDING: Card tap request for UID: ${uid}`, 'info');
+            log(`   Endpoint: ${apiURL}`, 'info');
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", apiURL, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            
+                            if (response.success) {
+                                successCount++;
+                                updateStats();
+                                log(`✅ SUCCESS: ${response.message}`, 'success');
+                                if (response.student) log(`   👤 Student: ${response.student}`, 'success');
+                                if (response.type) log(`   📝 Type: ${response.type}`, 'success');
+                                if (response.time) log(`   ⏰ Time: ${response.time}`, 'success');
+                                if (response.date) log(`   📅 Date: ${response.date}`, 'success');
+                            } else {
+                                failedCount++;
+                                updateStats();
+                                log(`⚠️  WARNING: ${response.message}`, 'warning');
+                                if (response.student) log(`   👤 Student: ${response.student}`, 'warning');
+                            }
+                        } catch (e) {
+                            failedCount++;
+                            updateStats();
+                            log(`❌ ERROR: Invalid JSON response`, 'error');
+                            log(`   Raw response: ${xhr.responseText}`, 'error');
+                        }
+                    } else {
+                        failedCount++;
+                        updateStats();
+                        log(`❌ HTTP ERROR: Status ${xhr.status}`, 'error');
+                        log(`   Check if XAMPP Apache is running`, 'error');
+                    }
+                    log('─────────────────────────────────────────', 'info');
+                }
+            };
+
+            xhr.onerror = function() {
+                failedCount++;
+                updateStats();
+                log('❌ NETWORK ERROR: Could not connect to server', 'error');
+                log('   ✓ Check if XAMPP is running', 'error');
+                log('   ✓ Verify API endpoint URL is correct', 'error');
+                log('   ✓ Check Windows Firewall settings', 'error');
+                log('─────────────────────────────────────────', 'info');
+            };
+
+            xhr.send(JSON.stringify({ uid: uid }));
+        }
+
+        function testFlow() {
+            const uid = document.getElementById('uidInput').value.trim();
+            
+            if (!uid) {
+                log('❌ ERROR: Please enter a UID', 'error');
+                return;
+            }
+
+            clearOutput();
+            log('🔄 STARTING FULL TEST FLOW...', 'info');
+            log('════════════════════════════════════════════', 'info');
+            log('', 'info');
+
+            // First tap - Check IN
+            log('1️⃣  FIRST TAP - Expected: CHECK-IN', 'info');
+            simulateTap();
+
+            // Second tap - Check OUT
+            setTimeout(() => {
+                log('', 'info');
+                log('2️⃣  SECOND TAP - Expected: CHECK-OUT', 'info');
+                simulateTap();
+            }, 2500);
+
+            // Third tap - Rejected
+            setTimeout(() => {
+                log('', 'info');
+                log('3️⃣  THIRD TAP - Expected: REJECTED', 'info');
+                simulateTap();
+            }, 5000);
+
+            setTimeout(() => {
+                log('', 'info');
+                log('════════════════════════════════════════════', 'info');
+                log('✅ TEST FLOW COMPLETED!', 'success');
+            }, 7000);
+        }
+
+        // Initial setup
+        window.onload = function() {
+            log('════════════════════════════════════════════', 'info');
+            log('✅ RFID Simulator Ready!', 'success');
+            log('📋 Instructions:', 'info');
+            log('   1. Enter a valid UID from your database', 'info');
+            log('   2. Verify the API endpoint URL is correct', 'info');
+            log('   3. Make sure XAMPP Apache is running', 'info');
+            log('   4. Click "Tap Card" to simulate a scan', 'info');
+            log('   5. Use "Test Full Flow" to test IN → OUT → Reject', 'info');
+            log('════════════════════════════════════════════', 'info');
+            log('', 'info');
+        };
+    </script>
+</body>
+</html>

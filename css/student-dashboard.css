@@ -224,20 +224,23 @@ body {
     display: none;
 }
 
-/* Admin clickable calendar days */
+/* Admin clickable calendar days - Subtle hover effects */
 .calendar-day[style*="cursor: pointer"]:hover {
-    transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(91, 123, 233, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(91, 123, 233, 0.15);
     border-color: var(--primary-color);
+    transition: all 0.2s ease;
 }
 
 .calendar-day[style*="cursor: pointer"].present:hover {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
 }
 
 .calendar-day[style*="cursor: pointer"].absent:hover,
 .calendar-day[style*="cursor: pointer"]:not(.present):not(.absent):hover {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: rgba(16, 185, 129, 0.15);
+    border-color: #10b981;
 }
 
 .calendar-legend {
