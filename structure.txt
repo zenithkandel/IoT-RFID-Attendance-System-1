@@ -7,6 +7,7 @@ Project By: Edu Track Pro Team
 
 Event:      Tech Expo Demonstration
 Date:       November 2025
+Version:    2.0 (MySQL PHP Backend)
 
 Developers: 
   - Sakshyam Bastakoti (Hardware Engineer) - https://github.com/they-call-me-electronerd
@@ -21,6 +22,15 @@ system that uses RFID (Radio Frequency Identification) technology to automate
 the process of tracking student attendance. The system eliminates manual
 attendance marking, reduces errors, and provides real-time data analytics.
 
+MAJOR UPDATE (v2.0):
+- Migrated from Google Apps Script to PHP + MySQL backend
+- Enhanced security with bcrypt password hashing
+- Automatic check-in/check-out detection
+- Improved admin panel with card-based UI
+- Real-time student dashboard access
+- Password management system
+- RFID testing simulator
+
 
 
 ================================================================================
@@ -29,36 +39,56 @@ attendance marking, reduces errors, and provides real-time data analytics.
 
 ADMINISTRATOR (Admin Panel)
 ───────────────────────────
-  ✓ View all students' attendance records
-  ✓ Analytics dashboard with charts:
-    - Daily/Weekly/Monthly attendance trends
-    - Class-wise attendance comparison
-    - Individual student attendance percentage
-    - Present vs Absent ratio (pie charts)
-    - Attendance heatmaps
-  ✓ Filter by date range, class, student
-  ✓ Export reports (CSV, Excel)
-  ✓ View real-time attendance feed
-  ✓ Direct database management:
-    - Add/Edit/Delete student records
-    - Modify attendance entries
-    - Update student information (Name, Roll, Class, Address)
-    - Manage student passwords
-    - Bulk import/export operations
-  ✓ User management:
-    - Create/manage admin accounts
-    - View login history and activity logs
+  ✓ Dashboard Overview:
+    - Total students count
+    - Present/Absent statistics for today
+    - Real-time activity feed with auto-refresh toggle
+    - Absent students list with quick actions
+  
+  ✓ Attendance Logs:
+    - Complete attendance history with check-in/check-out times
+    - Advanced filtering (date range, class, student)
+    - Search functionality
+    - Filter chips for active filters
+  
+  ✓ Manage Students (Card-based UI):
+    - View all students in modern card layout
+    - Search students by name, UID, roll, class, or address
+    - Add new students with validation
+    - Edit student information (UID, Name, Roll, Class, Address, Password)
+    - Delete students (cascades to attendance records)
+    - View student dashboard directly from admin panel
+    - Three-button action layout per card:
+      • Dashboard (Blue) - View student's attendance dashboard
+      • Edit (Purple) - Modify student details
+      • Delete (Red) - Remove student with confirmation
+  
+  ✓ Reports & Analytics:
+    - Attendance trends chart (Last 7 days)
+    - Class participation pie chart
+    - Class performance summary table
+    - Export options (Daily CSV, Monthly Excel, Absentees List)
+  
+  ✓ Change Password:
+    - Secure password update form
+    - Old password verification
+    - New password validation (min 6 characters)
+    - Confirmation matching check
+    - Bcrypt hashing
 
 STUDENT (Student Portal)
 ────────────────────────
   ✓ View personal attendance only
   ✓ Calendar-based UI showing:
-    - Green: Present days
-    - Red: Absent days
+    - Green: Present days (hover to unmark)
+    - Red: Absent days (hover to mark present)
     - Gray: Holidays/Non-school days
+  ✓ Check-in and Check-out times displayed
+  ✓ Today's status card with times
   ✓ Attendance percentage display
   ✓ Monthly attendance summary
-  ✓ Login using Roll Number + UID
+  ✓ Check specific date attendance
+  ✓ Login using Roll Number + Password
 
 
 
@@ -66,22 +96,27 @@ STUDENT (Student Portal)
                         KEY FEATURES
 ================================================================================
 
-  ✦ Real-time Attendance Tracking
-  ✦ Dual Backend Support (Google Sheets + MySQL Database)
-  ✦ No Internet Required for Scanning (queues offline, syncs later)
-  ✦ Beautiful, Responsive Web Dashboard
+  ✦ Real-time Attendance Tracking with Check-In/Check-Out
+  ✦ MySQL + PHP Backend (Migrated from Google Sheets)
+  ✦ Automatic IN/OUT Detection (First scan=IN, Second=OUT, Third+=Rejected)
+  ✦ Beautiful, Responsive Web Dashboard with Card-based UI
   ✦ Role-based Access (Admin/Student)
-  ✦ Interactive Analytics & Charts
-  ✦ Calendar-based Attendance View
-  ✦ Minimalistic & Modern UI Design
+  ✦ Interactive Analytics & Charts (Chart.js)
+  ✦ Calendar-based Attendance View with Hover Effects
+  ✦ Minimalistic & Modern UI Design (Dark/Light Theme)
   ✦ Mobile-friendly Interface
-  ✦ Wi-Fi Configuration via Hotspot
+  ✦ Wi-Fi Configuration via WiFiManager
   ✦ Audio-Visual Feedback (Buzzer + LED + LCD)
-  ✦ Secure Password Authentication
+  ✦ Secure Password Authentication (Bcrypt Hashing)
   ✦ Session Management & Last Login Tracking
   ✦ Full CRUD Operations via Admin Panel
   ✦ Direct Database Editing & Management
-  ✦ Bulk Operations (Import/Export/Update)
+  ✦ Search & Filter Functionality
+  ✦ Password Change System
+  ✦ RFID Testing Simulator (Browser-based)
+  ✦ Nepal Timezone Support (GMT+5:45)
+  ✦ Admin View of Student Dashboards
+  ✦ Real-time Data Validation
 
 ================================================================================
                         PURPOSE & USE CASES
@@ -109,43 +144,147 @@ STUDENT (Student Portal)
 ================================================================================
 
 DATABASE: edutrack (MySQL/MariaDB)
-Backend: XAMPP Server (PHP + MySQL)
+Backend: XAMPP Server (Apache + MySQL)
+Server: localhost (default port 80)
+Character Set: utf8mb4
 
 TABLE 1: students
 ─────────────────
   • ID (INT, Primary Key, Auto Increment) - Unique student identifier
-  • UID (TEXT) - RFID card unique identifier
-  • Name (TEXT) - Student full name
-  • Roll (INT) - Roll number (used for login)
-  • Class (TEXT) - Student's class/grade
-  • Address (INT) - Student address
-  • password (TEXT) - Hashed password for student login
-  • last_login (TEXT) - Last login timestamp
+  • UID (VARCHAR) - RFID card unique identifier (e.g., "54:83:DE:A4")
+  • Name (VARCHAR) - Student full name
+  • Roll (INT, UNIQUE) - Roll number (used for login)
+  • Class (VARCHAR) - Student's class/grade (e.g., "M-5", "D-7")
+  • Address (VARCHAR) - Student address
+  • password (VARCHAR) - Bcrypt hashed password for student login
+  • last_login (DATETIME) - Last login timestamp
 
 TABLE 2: attendance
 ───────────────────
   • ID (INT, Primary Key, Auto Increment) - Unique attendance record ID
-  • Time (INT) - Attendance timestamp (Unix time)
-  • UID (INT) - Reference to student UID
-  • Date (TEXT) - Attendance date (formatted)
-  • Type (INT) - Attendance type (0=Absent, 1=Present, etc.)
+  • Time (TIME) - Attendance time (HH:MM:SS format)
+  • UID (VARCHAR) - Reference to student UID
+  • Date (DATE) - Attendance date (YYYY-MM-DD format)
+  • Type (ENUM: 'IN', 'OUT') - Check-in or Check-out
+  
+  Logic: First scan of day = 'IN', Second scan = 'OUT', Third+ = Rejected
+  Timezone: Nepal (GMT+5:45) calculated server-side
 
 TABLE 3: users
 ──────────────
   • ID (INT, Primary Key, Auto Increment) - Unique admin user ID
-  • username (TEXT) - Admin username
-  • password (TEXT) - Hashed password
-  • last_login (TEXT) - Last login timestamp
+  • username (VARCHAR, UNIQUE) - Admin username (default: "admin")
+  • password (VARCHAR) - Bcrypt hashed password
+  • last_login (DATETIME) - Last login timestamp
 
 MIGRATION STATUS:
 ─────────────────
-  ☑ Database schema created (edutrack.sql)
-  ☐ PHP API endpoints for CRUD operations
-  ☐ Update frontend to use MySQL backend
-  ☐ ESP8266 firmware update for MySQL integration
-  ☐ Password hashing implementation (bcrypt/SHA-256)
-  ☐ Session management with PHP
-  ☐ Data migration from Google Sheets
+  ✅ Database schema created (edutrack.sql)
+  ✅ PHP API endpoints for CRUD operations
+  ✅ Frontend updated to use MySQL backend
+  ✅ ESP8266 firmware updated for MySQL integration
+  ✅ Password hashing implemented (bcrypt)
+  ✅ Session management with JavaScript sessionStorage
+  ✅ RFID check-in API (rfid-checkin.php)
+  ✅ Student management APIs (add, edit, delete)
+  ✅ Attendance fetching with IN/OUT grouping
+  ✅ Password change API (change-password.php)
+
+================================================================================
+                     SYSTEM ARCHITECTURE
+================================================================================
+
+HARDWARE LAYER:
+──────────────
+  • ESP8266 NodeMCU (Wi-Fi enabled microcontroller)
+  • MFRC522 RFID Reader Module (13.56MHz)
+  • 16x2 LCD Display with I2C interface (Address: 0x27)
+  • Active Buzzer (GPIO 16)
+  • LED Indicator (GPIO 15)
+  • MIFARE RFID Cards/Tags
+
+FIRMWARE:
+─────────
+  • Platform: Arduino IDE
+  • Libraries: ESP8266WiFi, WiFiManager, MFRC522, LiquidCrystal_I2C, 
+              ESP8266HTTPClient
+  • Features: 
+    - WiFi auto-configuration portal
+    - HTTP POST to PHP API
+    - LCD feedback (Name, Time, Status)
+    - Audio-visual confirmation (Buzzer + LED)
+    - UID reading and transmission
+
+BACKEND (PHP + MySQL):
+─────────────────────
+  • Server: XAMPP (Apache 2.4 + MySQL 8.0/MariaDB 10.4)
+  • PHP Version: 8.0+
+  • Database: edutrack (MySQL/MariaDB)
+  • API Endpoints:
+    
+    /API/conn.php                - Database connection handler
+    /API/rfid-checkin.php        - RFID card tap processing (IN/OUT logic)
+    /API/fetch-student.php       - Get student data (all or specific)
+    /API/fetch-attendance.php    - Get attendance records with IN/OUT grouping
+    /API/fetch-users.php         - Get admin users list
+    /API/login.php               - Student/Admin authentication
+    /API/mark-attendance.php     - Manual attendance marking
+    /API/add-student.php         - Add new student with validation
+    /API/update-student.php      - Edit student information
+    /API/delete-student.php      - Delete student (cascade to attendance)
+    /API/change-password.php     - Update admin password securely
+
+FRONTEND (HTML/CSS/JavaScript):
+──────────────────────────────
+  • Framework: Vanilla JavaScript (ES6+)
+  • Styling: Custom CSS with CSS Variables (Dark/Light theme)
+  • Charts: Chart.js for analytics visualization
+  • Icons: Font Awesome 6.4.0
+  • Fonts: Inter, Space Grotesk (Google Fonts)
+  
+  Pages:
+    - index.html              - Landing page
+    - login.html              - Login page (Admin/Student)
+    - admin-dashboard.html    - Admin control panel
+    - student-dashboard.html  - Student attendance view
+    - test-rfid.html          - RFID simulator for testing
+  
+  Scripts:
+    - js/main.js              - Global utilities, theme management
+    - js/login.js             - Login form handling
+    - js/loginHandler.js      - Authentication logic
+    - js/admin-dashboard.js   - Admin panel functionality
+    - js/student-dashboard.js - Student portal logic
+  
+  Styles:
+    - css/style.css           - Global styles, theme variables
+    - css/login.css           - Login page styles
+    - css/admin-dashboard.css - Admin panel styles
+    - css/student-dashboard.css - Student portal styles
+
+DATA FLOW:
+──────────
+  1. Student taps RFID card on reader
+  2. ESP8266 reads UID and sends HTTP POST to rfid-checkin.php
+  3. PHP validates UID against students table
+  4. Checks attendance table for existing scans today
+  5. Determines Type: 'IN' (first), 'OUT' (second), or Rejected (third+)
+  6. Inserts record with Nepal timezone timestamp
+  7. Returns JSON response to ESP8266
+  8. ESP8266 displays result on LCD with audio-visual feedback
+  9. Web dashboard fetches updated data via AJAX
+  10. Real-time UI update without page reload
+
+SECURITY FEATURES:
+─────────────────
+  • Bcrypt password hashing (cost factor: 10)
+  • SQL injection prevention (prepared statements)
+  • Session-based authentication (sessionStorage)
+  • CORS headers for API security
+  • Password strength validation (min 6 characters)
+  • Duplicate prevention (unique UIDs and Roll numbers)
+  • Input sanitization and validation
+  • XSS prevention (proper escaping)
 
 ================================================================================
                         FUTURE ENHANCEMENTS
@@ -156,13 +295,177 @@ MIGRATION STATUS:
   □ Biometric integration (fingerprint)
   □ Face recognition option
   □ Multiple RFID reader support
-  □ Offline mode with sync
+  □ Offline mode with sync queue
   □ PDF report generation
-  □ Multi-school support
-  □ API for third-party integrations
+  □ Multi-school/Multi-tenant support
+  □ REST API for third-party integrations
   □ Advanced analytics with machine learning
-  □ Backup and restore functionality
-  □ Audit logs for security
+  □ Automated backup and restore
+  □ Audit logs for security compliance
+  □ Geolocation tracking
+  □ Parent portal with push notifications
+  □ Attendance reports via WhatsApp Bot
+  □ Integration with school management systems
+  □ QR code alternative for RFID
+  □ NFC support for smartphones
+
+================================================================================
+                        INSTALLATION & SETUP
+================================================================================
+
+HARDWARE SETUP:
+──────────────
+  1. Connect MFRC522 RFID module to ESP8266:
+     - SDA  → GPIO 4 (D2)
+     - SCK  → GPIO 14 (D5)
+     - MOSI → GPIO 13 (D7)
+     - MISO → GPIO 12 (D6)
+     - RST  → GPIO 5 (D1)
+     - GND  → GND
+     - 3.3V → 3.3V
+
+  2. Connect LCD I2C to ESP8266:
+     - VCC → 5V
+     - GND → GND
+     - SDA → GPIO 4 (D2)
+     - SCL → GPIO 5 (D1)
+
+  3. Connect Buzzer:
+     - Positive → GPIO 16 (D0)
+     - Negative → GND
+
+  4. Connect LED:
+     - Anode (+) → GPIO 15 (D8)
+     - Cathode (-) → GND (with 220Ω resistor)
+
+SOFTWARE SETUP:
+──────────────
+  1. Install XAMPP (Apache + MySQL)
+  2. Start Apache and MySQL from XAMPP Control Panel
+  3. Import edutrack.sql into phpMyAdmin:
+     - Open http://localhost/phpmyadmin
+     - Create database 'edutrack'
+     - Import edutrack.sql file
+  4. Update API endpoint in audrino.ino if needed:
+     - serverHost = "192.168.1.100" (your computer's IP)
+     - apiEndpoint = "/projects/iot/IoT-RFID-Attendance-System-/API/rfid-checkin.php"
+  5. Upload firmware to ESP8266 using Arduino IDE
+  6. Configure WiFi:
+     - Connect to "AutoConnectAP" hotspot from ESP8266
+     - Enter your WiFi credentials
+     - Device will auto-connect on next boot
+  7. Access dashboards:
+     - Admin: http://localhost/projects/iot/IoT-RFID-Attendance-System-/admin-dashboard.html
+     - Student: http://localhost/projects/iot/IoT-RFID-Attendance-System-/student-dashboard.html
+     - Test: http://localhost/projects/iot/IoT-RFID-Attendance-System-/test-rfid.html
+
+DEFAULT CREDENTIALS:
+───────────────────
+  Admin:
+    Username: admin
+    Password: admin123 (change immediately after first login)
+  
+  Students:
+    Login with Roll Number + Password (set during student creation)
+
+TESTING:
+────────
+  1. Use test-rfid.html to simulate card taps without hardware
+  2. Select student from dropdown or enter UID manually
+  3. Test full flow: IN → OUT → Rejected
+  4. Monitor console output for API responses
+
+================================================================================
+                     TROUBLESHOOTING
+================================================================================
+
+COMMON ISSUES:
+─────────────
+  • "Error connecting to database"
+    → Check XAMPP MySQL is running
+    → Verify database 'edutrack' exists
+    → Check conn.php credentials
+  
+  • "Student not found"
+    → Verify UID exists in students table
+    → Check UID format matches (e.g., "54:83:DE:A4")
+  
+  • ESP8266 not connecting to WiFi
+    → Reset WiFi settings by holding reset button
+    → Reconnect to "AutoConnectAP" and reconfigure
+  
+  • RFID not reading
+    → Check wiring connections
+    → Verify MFRC522 module is powered (3.3V)
+    → Test with known working RFID card
+  
+  • LCD not displaying
+    → Check I2C address (default: 0x27, some use 0x3F)
+    → Update LCD_ADDRESS in firmware if needed
+  
+  • Timezone issues
+    → Nepal timezone (GMT+5:45) is calculated server-side
+    → Verify server time is correct
+    → Check PHP DateInterval calculation in rfid-checkin.php
+
+LOGS & DEBUGGING:
+────────────────
+  • Browser Console (F12) - JavaScript errors, API responses
+  • Network Tab - API request/response inspection
+  • PHP Error Logs - Check XAMPP logs folder
+  • Serial Monitor (Arduino IDE) - ESP8266 debug output
+
+================================================================================
+                        FILE STRUCTURE
+================================================================================
+
+IoT-RFID-Attendance-System-/
+│
+├── index.html                  # Landing page
+├── login.html                  # Login page
+├── admin-dashboard.html        # Admin control panel
+├── student-dashboard.html      # Student portal
+├── test-rfid.html             # RFID testing simulator
+├── audrino.ino                # ESP8266 firmware
+├── edutrack.sql               # Database schema
+├── structure.txt              # This documentation file
+│
+├── API/                       # Backend PHP APIs
+│   ├── conn.php               # Database connection
+│   ├── rfid-checkin.php       # RFID check-in/out handler
+│   ├── fetch-student.php      # Get student data
+│   ├── fetch-attendance.php   # Get attendance records
+│   ├── fetch-users.php        # Get admin users
+│   ├── login.php              # Authentication
+│   ├── mark-attendance.php    # Manual attendance
+│   ├── add-student.php        # Add new student
+│   ├── update-student.php     # Edit student
+│   ├── delete-student.php     # Delete student
+│   └── change-password.php    # Update password
+│
+├── css/                       # Stylesheets
+│   ├── style.css              # Global styles
+│   ├── login.css              # Login page styles
+│   ├── admin-dashboard.css    # Admin panel styles
+│   └── student-dashboard.css  # Student portal styles
+│
+├── js/                        # JavaScript files
+│   ├── main.js                # Global utilities
+│   ├── login.js               # Login form handling
+│   ├── loginHandler.js        # Authentication logic
+│   ├── admin-dashboard.js     # Admin panel functionality
+│   └── student-dashboard.js   # Student portal logic
+│
+├── assets/                    # Media files (if any)
+│
+└── old/                       # Deprecated Google Sheets version
+    ├── Edu_Track_Pro_App_Script.txt
+    ├── Edu_Track_Pro_Code.ino
+    ├── fetch.txt
+    ├── index.html
+    ├── README.md
+    ├── script.js
+    └── style.css
 
 ================================================================================
                         CONTACT & CREDITS
@@ -176,7 +479,24 @@ GitHub: https://github.com/they-call-me-electronerd
 Software Engineer: Zenith Kandel
 GitHub: https://github.com/zenithkandel
 
+Repository: https://github.com/zenithkandel/IoT-RFID-Attendance-System-1
+
+Tech Stack:
+  • Hardware: ESP8266 NodeMCU, MFRC522 RFID, LCD 16x2 I2C
+  • Firmware: Arduino C++, WiFiManager, ESP8266HTTPClient
+  • Backend: PHP 8.0, MySQL/MariaDB, XAMPP
+  • Frontend: HTML5, CSS3, JavaScript ES6+, Chart.js
+  • Version Control: Git, GitHub
+
+Special Thanks:
+  • Arduino Community
+  • ESP8266 Community
+  • Chart.js Team
+  • Font Awesome
+  • Google Fonts
+
 ================================================================================
                            © 2025 EDU TRACK PRO
               Edu Track Pro Team - All Rights Reserved
+                   Licensed under MIT License
 ================================================================================
