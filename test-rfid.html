@@ -478,13 +478,16 @@
             log('════════════════════════════════════════════', 'info');
             log('✅ RFID Simulator Ready!', 'success');
             log('📋 Instructions:', 'info');
-            log('   1. Enter a valid UID from your database', 'info');
+            log('   1. Select a student from dropdown or enter UID manually', 'info');
             log('   2. Verify the API endpoint URL is correct', 'info');
             log('   3. Make sure XAMPP Apache is running', 'info');
             log('   4. Click "Tap Card" to simulate a scan', 'info');
             log('   5. Use "Test Full Flow" to test IN → OUT → Reject', 'info');
             log('════════════════════════════════════════════', 'info');
             log('', 'info');
+            
+            // Load students from database
+            loadStudents();
         };
     </script>
 </body>
