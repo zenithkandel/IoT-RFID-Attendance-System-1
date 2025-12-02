@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initReports();
     initFilters();
     initAutoRefresh();
+    initManageUsers();
     
     // Mobile Sidebar Toggle
     const mobileToggle = document.querySelector('.mobile-toggle');
@@ -1139,6 +1140,7 @@ async function submitEditStudentForm() {
             // Close modal and refresh data
             modal.classList.remove('active');
             await fetchAdminData();
+            populateManageUsersTable();
             alert('Student updated successfully');
         } else {
             alert(result.message || 'Failed to update student');
@@ -1146,5 +1148,181 @@ async function submitEditStudentForm() {
     } catch (err) {
         console.error('Error updating student:', err);
         alert('Error updating student');
+    }
+}
+
+// User Management Functions ------------------------------------------------------
+function initManageUsers() {
+    const btnAddStudent = document.getElementById('btnAddStudent');
+    if (btnAddStudent) {
+        btnAddStudent.addEventListener('click', openAddStudentModal);
+    }
+    
+    populateManageUsersTable();
+}
+
+function openAddStudentModal() {
+    const modal = document.getElementById('addStudentModal');
+    if (!modal) return;
+
+    // Clear form
+    document.getElementById('addUID').value = '';
+    document.getElementById('addName').value = '';
+    document.getElementById('addRoll').value = '';
+    document.getElementById('addClass').value = '';
+    document.getElementById('addAddress').value = '';
+    document.getElementById('addPassword').value = '';
+
+    // Show modal
+    modal.classList.add('active');
+
+    // Wire close button
+    const modalCloseBtn = modal.querySelector('.modal-close');
+    if (modalCloseBtn) {
+        modalCloseBtn.onclick = () => {
+            modal.classList.remove('active');
+        };
+    }
+
+    // Wire backdrop click
+    modal.onclick = (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    };
+
+    // Wire cancel/save buttons
+    const btnCancel = document.getElementById('cancelAddStudent');
+    const btnSave = document.getElementById('saveAddStudent');
+
+    if (btnCancel) {
+        btnCancel.onclick = (e) => {
+            e.preventDefault();
+            modal.classList.remove('active');
+        };
+    }
+
+    if (btnSave) {
+        btnSave.onclick = async (e) => {
+            e.preventDefault();
+            await submitAddStudentForm();
+        };
+    }
+}
+
+async function submitAddStudentForm() {
+    const modal = document.getElementById('addStudentModal');
+    if (!modal) return;
+
+    const uid = document.getElementById('addUID').value.trim();
+    const name = document.getElementById('addName').value.trim();
+    const roll = document.getElementById('addRoll').value.trim();
+    const classVal = document.getElementById('addClass').value.trim();
+    const address = document.getElementById('addAddress').value.trim();
+    const password = document.getElementById('addPassword').value;
+
+    // Validation
+    if (!uid || !name || !roll || !classVal || !password) {
+        alert('Please fill in all required fields (marked with *)');
+        return;
+    }
+
+    const payload = {
+        uid: uid,
+        name: name,
+        roll: parseInt(roll),
+        class: classVal,
+        address: address,
+        password: password
+    };
+
+    try {
+        const resp = await fetch('API/add-student.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await resp.json();
+        if (result.success) {
+            modal.classList.remove('active');
+            await fetchAdminData();
+            populateManageUsersTable();
+            alert('Student added successfully!');
+        } else {
+            alert(result.message || 'Failed to add student');
+        }
+    } catch (err) {
+        console.error('Error adding student:', err);
+        alert('Error adding student');
+    }
+}
+
+function populateManageUsersTable() {
+    const tbody = document.getElementById('manageUsersTable');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (globalStudents.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-light);">No students found</td></tr>';
+        return;
+    }
+
+    globalStudents.forEach(student => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${student.uid}</td>
+            <td>${student.name}</td>
+            <td>${student.roll}</td>
+            <td>${student.class}</td>
+            <td>${student.address || 'N/A'}</td>
+            <td>
+                <button class="btn-sm" onclick="editUserFromManage('${student.id}', '${student.uid}', '${student.name}', '${student.roll}', '${student.class}', '${student.address}')" style="background: var(--primary-color); color: white; margin-right: 5px;">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-sm" onclick="deleteUser('${student.id}', '${student.name}')" style="background: var(--danger); color: white;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function editUserFromManage(id, uid, name, roll, classVal, address) {
+    openEditStudentModal({
+        id: id,
+        uid: uid,
+        name: name,
+        roll: roll,
+        class: classVal,
+        address: address
+    });
+}
+
+async function deleteUser(id, name) {
+    if (!confirm(`Are you sure you want to delete ${name}?\n\nThis will also delete all their attendance records.\n\nThis action cannot be undone!`)) {
+        return;
+    }
+
+    try {
+        const resp = await fetch('API/delete-student.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: parseInt(id) })
+        });
+
+        const result = await resp.json();
+        if (result.success) {
+            await fetchAdminData();
+            populateManageUsersTable();
+            alert(result.message);
+        } else {
+            alert(result.message || 'Failed to delete student');
+        }
+    } catch (err) {
+        console.error('Error deleting student:', err);
+        alert('Error deleting student');
     }
 }
