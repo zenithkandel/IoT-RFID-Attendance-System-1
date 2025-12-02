@@ -1257,13 +1257,13 @@ function populateManageUsersTable() {
                 </div>
             </div>
             <div class="student-actions">
-                <button class="btn-view-student" data-roll="${student.roll}" style="background: var(--primary-color); border-color: var(--primary-color);">
-                    <i class="fas fa-cog"></i> Dashboard
+                <button class="btn-view-student" data-roll="${student.roll}">
+                    <i class="fas fa-eye"></i> View
                 </button>
                 <button class="btn-edit-student" data-id="${student.id}" data-uid="${student.uid}" data-roll="${student.roll}" data-name="${student.name}" data-class="${student.class}" data-address="${student.address}">
                     <i class="fas fa-edit"></i> Edit
                 </button>
-                <button class="btn-delete-student" data-id="${student.id}" data-name="${student.name}" style="background: var(--danger); border-color: var(--danger);">
+                <button class="btn-delete-student" data-id="${student.id}" data-name="${student.name}">
                     <i class="fas fa-trash"></i> Delete
                 </button>
             </div>

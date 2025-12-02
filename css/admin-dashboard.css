@@ -611,7 +611,7 @@ body {
     margin-left: 10px;
 }
 
-/* Edit Student Button */
+/* Student Action Buttons */
 .student-actions {
     margin-top: 16px;
     padding-top: 14px;
@@ -626,11 +626,12 @@ body {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
-.btn-edit-student {
-    background: rgba(91, 123, 233, 0.1);
-    color: #5B7BE9;
-    border: 1px solid rgba(91, 123, 233, 0.2);
-    padding: 8px 20px;
+/* View Dashboard Button */
+.btn-view-student {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3B82F6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    padding: 8px 16px;
     border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 500;
@@ -639,15 +640,68 @@ body {
     align-items: center;
     gap: 7px;
     transition: all 0.25s ease;
-    width: 100%;
+    flex: 1;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .btn-view-student {
+    background: rgba(59, 130, 246, 0.08);
+    color: #2563EB;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.btn-view-student i {
+    font-size: 0.9rem;
+    transition: transform 0.25s ease;
+}
+
+.btn-view-student:hover {
+    background: #3B82F6;
+    color: white;
+    border-color: #3B82F6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+[data-theme="light"] .btn-view-student:hover {
+    background: #2563EB;
+    border-color: #2563EB;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-view-student:hover i {
+    transform: scale(1.1);
+}
+
+.btn-view-student:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+}
+
+/* Edit Student Button */
+.btn-edit-student {
+    background: rgba(168, 85, 247, 0.1);
+    color: #A855F7;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.25s ease;
+    flex: 1;
     justify-content: center;
     backdrop-filter: blur(10px);
 }
 
 [data-theme="light"] .btn-edit-student {
-    background: rgba(91, 123, 233, 0.08);
-    color: #4A6BD8;
-    border: 1px solid rgba(91, 123, 233, 0.25);
+    background: rgba(168, 85, 247, 0.08);
+    color: #9333EA;
+    border: 1px solid rgba(168, 85, 247, 0.25);
 }
 
 .btn-edit-student i {
@@ -656,17 +710,17 @@ body {
 }
 
 .btn-edit-student:hover {
-    background: #5B7BE9;
+    background: #A855F7;
     color: white;
-    border-color: #5B7BE9;
+    border-color: #A855F7;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(91, 123, 233, 0.25);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
 }
 
 [data-theme="light"] .btn-edit-student:hover {
-    background: #4A6BD8;
-    border-color: #4A6BD8;
-    box-shadow: 0 4px 12px rgba(74, 107, 216, 0.3);
+    background: #9333EA;
+    border-color: #9333EA;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);
 }
 
 .btn-edit-student:hover i {
@@ -675,7 +729,60 @@ body {
 
 .btn-edit-student:active {
     transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(91, 123, 233, 0.2);
+    box-shadow: 0 2px 6px rgba(168, 85, 247, 0.2);
+}
+
+/* Delete Student Button */
+.btn-delete-student {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.25s ease;
+    flex: 1;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="light"] .btn-delete-student {
+    background: rgba(239, 68, 68, 0.08);
+    color: #DC2626;
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.btn-delete-student i {
+    font-size: 0.9rem;
+    transition: transform 0.25s ease;
+}
+
+.btn-delete-student:hover {
+    background: #EF4444;
+    color: white;
+    border-color: #EF4444;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+[data-theme="light"] .btn-delete-student:hover {
+    background: #DC2626;
+    border-color: #DC2626;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-delete-student:hover i {
+    transform: scale(1.1) rotate(10deg);
+}
+
+.btn-delete-student:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
 }
 
 .no-absences {
