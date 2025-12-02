@@ -1328,3 +1328,66 @@ async function deleteUser(id, name) {
         alert('Error deleting student');
     }
 }
+
+// Change Password functionality
+function resetPasswordForm() {
+    document.getElementById('changePasswordForm').reset();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate passwords match
+            if (newPassword !== confirmPassword) {
+                alert('New passwords do not match!');
+                return;
+            }
+            
+            // Validate password length
+            if (newPassword.length < 6) {
+                alert('New password must be at least 6 characters long!');
+                return;
+            }
+            
+            // Validate new password is different from current
+            if (currentPassword === newPassword) {
+                alert('New password must be different from current password!');
+                return;
+            }
+            
+            try {
+                const response = await fetch('API/change-password.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'admin', // Default admin username
+                        currentPassword: currentPassword,
+                        newPassword: newPassword
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('Password changed successfully!');
+                    resetPasswordForm();
+                    // Optionally redirect to login
+                    // sessionStorage.clear();
+                    // window.location.href = 'login.html';
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error changing password:', error);
+                alert('Failed to change password. Please try again.');
+            }
+        });
+    }
+});

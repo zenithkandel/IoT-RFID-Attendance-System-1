@@ -32,6 +32,9 @@
                 <li data-target="reports">
                     <a href="#"><i class="fas fa-chart-pie"></i> <span>Reports</span></a>
                 </li>
+                <li data-target="change-password">
+                    <a href="#"><i class="fas fa-key"></i> <span>Change Password</span></a>
+                </li>
             </ul>
             <div class="sidebar-footer">
                 <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
@@ -188,6 +191,39 @@
                     
                     <div id="manageUsersGrid" class="students-grid">
                         <!-- Student cards will be populated here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Change Password Section -->
+            <section id="change-password" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-key"></i> Change Password</h3>
+                    </div>
+                    <div style="max-width: 500px; margin: 20px auto; padding: 20px;">
+                        <form id="changePasswordForm">
+                            <div class="filter-group">
+                                <label for="currentPassword">Current Password <span style="color: red;">*</span></label>
+                                <input type="password" id="currentPassword" class="filter-input" placeholder="Enter current password" required />
+                            </div>
+                            <div class="filter-group">
+                                <label for="newPassword">New Password <span style="color: red;">*</span></label>
+                                <input type="password" id="newPassword" class="filter-input" placeholder="Enter new password" required />
+                            </div>
+                            <div class="filter-group">
+                                <label for="confirmPassword">Confirm New Password <span style="color: red;">*</span></label>
+                                <input type="password" id="confirmPassword" class="filter-input" placeholder="Re-enter new password" required />
+                            </div>
+                            <div style="margin-top: 30px; display: flex; gap: 10px;">
+                                <button type="submit" class="btn-primary" style="flex: 1;">
+                                    <i class="fas fa-check"></i> Update Password
+                                </button>
+                                <button type="button" class="btn-secondary" onclick="resetPasswordForm()" style="flex: 1;">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </section>
