@@ -26,11 +26,8 @@
                 <li data-target="logs">
                     <a href="#"><i class="fas fa-history"></i> <span>Attendance Logs</span></a>
                 </li>
-                <li data-target="students">
-                    <a href="#"><i class="fas fa-user-graduate"></i> <span>Students</span></a>
-                </li>
                 <li data-target="manage-users">
-                    <a href="#"><i class="fas fa-users-cog"></i> <span>Manage Users</span></a>
+                    <a href="#"><i class="fas fa-user-graduate"></i> <span>Manage Students</span></a>
                 </li>
                 <li data-target="reports">
                     <a href="#"><i class="fas fa-chart-pie"></i> <span>Reports</span></a>
@@ -173,31 +170,15 @@
                 </div>
             </section>
 
-            <!-- Students Section -->
-            <section id="students" class="section">
-                <div class="card">
-                    <div class="card-header">
-                        <h3><i class="fas fa-users"></i> Student Database</h3>
-                        <div class="search-box">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="studentSearch" placeholder="Search students...">
-                        </div>
-                    </div>
-                    <div id="studentsGrid" class="students-grid">
-                        <!-- Student cards will be populated here -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- Manage Users Section -->
+            <!-- Manage Students Section -->-->
             <section id="manage-users" class="section">
                 <div class="card">
                     <div class="card-header">
-                        <h3><i class="fas fa-users-cog"></i> User Management</h3>
+                        <h3><i class="fas fa-user-graduate"></i> Student Management</h3>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <div class="search-box">
                                 <i class="fas fa-search"></i>
-                                <input type="text" id="manageUsersSearch" placeholder="Search users...">
+                                <input type="text" id="manageUsersSearch" placeholder="Search students...">
                             </div>
                             <button id="btnAddStudent" class="btn-primary">
                                 <i class="fas fa-user-plus"></i> Add New Student
@@ -206,7 +187,7 @@
                     </div>
                     
                     <div id="manageUsersGrid" class="students-grid">
-                        <!-- User cards will be populated here -->
+                        <!-- Student cards will be populated here -->
                     </div>
                 </div>
             </section>
