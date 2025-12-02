@@ -103,6 +103,11 @@ function initNavigation() {
                 section.classList.remove('active');
             }
         });
+        
+        // Populate manage users table when that section is opened
+        if (targetId === 'manage-users') {
+            populateManageUsersTable();
+        }
     }
 }
 
