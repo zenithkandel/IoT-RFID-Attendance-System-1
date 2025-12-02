@@ -1,16 +1,36 @@
 /*
-  EduTrack Pro - Final NodeMCU Attendance Sketch
-  Author : Sakshyam Bastakoti
-  GitHub : https://github.com/sakshyambastakoti
-  Date   : 2025-09-24
+  EduTrack Pro - NodeMCU Attendance System (MySQL PHP Backend)
+  Author : Sakshyam Bastakoti & Zenith Kandel
+  GitHub : https://github.com/zenithkandel/IoT-RFID-Attendance-System-1
+  Date   : 2025-12-02
+  
   Description:
-    - Reads RFID (MFRC522)
+    - Reads RFID (MFRC522) card UIDs
     - Shows status on I2C LCD (0x27, 16x2)
-    - Sends UID + ISO timestamp to Google Apps Script (HTTPSRedirect)
-    - WiFiManager for easy WiFi configuration
-    - Buzzer and LED feedback
-    - WiFi-reset button
-    - Robust, production-ready (ready for GitHub)
+    - Sends UID via HTTP POST to PHP API (rfid-checkin.php)
+    - PHP backend generates Nepal timestamp and handles check-in/check-out logic
+    - WiFiManager for easy WiFi configuration (no hardcoded credentials)
+    - Audio-visual feedback (Buzzer, LED, LCD)
+    - WiFi-reset button (long press = config portal)
+    - Production-ready with error handling
+  
+  IMPORTANT SETUP INSTRUCTIONS:
+    1. Install required libraries:
+       - WiFiManager by tzapu
+       - MFRC522 by GithubCommunity
+       - LiquidCrystal_I2C by Frank de Brabander
+    
+    2. Update serverHost below with your XAMPP server's IP address:
+       - Open Command Prompt and run: ipconfig
+       - Look for "IPv4 Address" (e.g., 192.168.1.100)
+       - Replace the IP around line 65 (look for serverHost variable)
+    
+    3. Verify apiEndpoint path matches your project folder location
+    
+    4. Upload to ESP8266 NodeMCU
+    
+    5. On first boot, connect to "EduTrackPro" WiFi hotspot
+       and configure your network credentials
 */
 
 // ---------- LIBRARIES ----------
