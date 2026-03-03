@@ -127,7 +127,7 @@ MISO → GPIO 12 (D6)
 RST  → GPIO 5 (D1)
 GND  → GND
 3.3V → 3.3V
-```
+``` 
 
 **LCD I2C:**
 ```
