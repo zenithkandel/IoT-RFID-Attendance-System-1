@@ -207,7 +207,7 @@ curl -X POST http://localhost/projects/iot/IoT-RFID-Attendance-System-/API/rfid-
   -H "Content-Type: application/json" \
   -d '{"uid":"54:83:DE:A4"}'
 
-# Fetch All Students
+# Fetch All Students 
 curl http://localhost/projects/iot/IoT-RFID-Attendance-System-/API/fetch-student.php
 ```
 
